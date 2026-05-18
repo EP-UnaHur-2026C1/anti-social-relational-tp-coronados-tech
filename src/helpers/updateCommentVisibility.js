@@ -1,4 +1,4 @@
-const { Comment } = require("../models");
+const { Comment } = require("../db/models");
 
 /**
  * Actualiza el campo isVisible de los comentarios según la antigüedad configurada.
