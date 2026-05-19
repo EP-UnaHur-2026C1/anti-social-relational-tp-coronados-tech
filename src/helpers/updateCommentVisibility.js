@@ -1,7 +1,7 @@
 const { Comment } = require("../db/models");
 
 const updateCommentVisibility = async ({ postId, userId } = {}) => {
-  const mesLimite = parseInt(process.env.MESES) || 6;
+  const mesLimite = parseInt(process.env.MESE) || 6;
 
   const where = {};
   if (postId) where.postId = postId;
