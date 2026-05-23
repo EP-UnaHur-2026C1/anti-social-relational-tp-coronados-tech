@@ -5,3 +5,4 @@ data/*
 uploads/*
 !uploads/posts/
 !uploads/posts/.gitkeepstat
+uploads/posts/*
