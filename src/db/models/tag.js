@@ -8,12 +8,11 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            Tag.hasMany(models.Post, { foreignKey: "postId", as: "posts" });
+            Tag.hasMany(models.Post, { foreignKey: "post_id", as: "posts" });
         }
     }
     Tag.init(
         {
-            //id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
             name: { type: DataTypes.STRING, allowNull: false },
             createdAt: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
             updatedAt: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },

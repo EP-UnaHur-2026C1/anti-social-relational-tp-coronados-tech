@@ -8,13 +8,12 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      (User.hasMany(models.Post, { foreignKey: "userId", as: "posts" }),
-        User.hasMany(models.Comment, { foreignKey: "userId", as: "comments" }));
+      (User.hasMany(models.Post, { foreignKey: "user_id", as: "posts" }),
+        User.hasMany(models.Comment, { foreignKey: "user_id", as: "comments" }));
     }
   }
   User.init(
     {
-      //  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
       nickname: { type: DataTypes.STRING, unique: true, allowNull: false },
       name: { type: DataTypes.STRING, allowNull: false },
       lastName: { type: DataTypes.STRING, allowNull: false },

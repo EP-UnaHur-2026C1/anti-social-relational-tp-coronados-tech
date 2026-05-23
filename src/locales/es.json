@@ -1,0 +1,5 @@
+{
+    "parameter_numeric": "El parametro {{field}} debe ser numerico.",
+    "id_dont_exist": "El elemento con el id {{id}} no exite en el modelo {{nombreModelo}}",
+    "invalid_data" :"Datos de {{nombreModelo}} inválidos"
+}
