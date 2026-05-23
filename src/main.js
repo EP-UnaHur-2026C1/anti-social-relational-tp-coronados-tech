@@ -3,7 +3,15 @@ const path = require("path");
 const i18n = require('i18n');
 const multer = require("multer");
 const { sequelize } = require("./db/models");
+
+const { User } = require("./db/models");
 const dotenv = require("dotenv");
+dotenv.config();
+const PORT = process.env.PORT || 3001;
+const usersRouter = require("./routes/user.routes");
+app.use(express.json());
+app.use("/users", usersRouter);
+app.use("/comments", commentsRouter);
 
 dotenv.config();
 const PORT = process.env.PORT || 3001;
@@ -17,14 +25,11 @@ i18n.configure({
   updateFiles: false // Evita que i18n escriba nuevos archivos
 });
 
-
 //ROUTE 
 const commentsRouter = require("./routes/comments.route");
 const usersRouter = require("./routes/user.routes");
 const postsRouter = require("./routes/post.routes");
 const postImagesRouter = require("./routes/postimage.routes");
-
-
 const app = express();
 
 app.use(i18n.init);
@@ -52,3 +57,4 @@ app.listen(PORT, async (err) => {
   await sequelize.sync({ force: true });
   console.log(`App iniciada en el puerto ${PORT}`);
 });
+
