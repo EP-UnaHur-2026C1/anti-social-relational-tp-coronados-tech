@@ -139,6 +139,37 @@ const deletePostImage = async (req, res) => {
   }
 };
 
+const updatePostImageFromPost = async (req, res) => {
+  try {
+    const postId = resolvePostId(req);
+    const imageId = req.params.image_id ?? req.params.imageId;
+
+    if (!req.file) {
+      return res.status(HTTP.BAD_REQUEST).json({ message: res.__("no_image_sent") });
+    }
+
+    const url = buildPublicUrl(req, req.file.filename);
+    const result = await postImageService.updateInPost(postId, imageId, { url });
+
+    if (result.status === "post_not_found") {
+      return notFoundPost(res, postId);
+    }
+
+    if (result.status === "image_not_found") {
+      return res.status(HTTP.NOT_FOUND).json({
+        message: res.__("post_image_not_in_post", { imageId, postId }),
+      });
+    }
+
+    res.status(HTTP.OK).json(result.postImage);
+  } catch (error) {
+    res.status(HTTP.INTERNAL_SERVER_ERROR).json({
+      message: res.__("error_update_post_image"),
+      error: error.message,
+    });
+  }
+};
+
 const deletePostImageFromPost = async (req, res) => {
   try {
     const postId = resolvePostId(req);
@@ -172,6 +203,7 @@ module.exports = {
   getPostImageById,
   getPostImagesByPost,
   updatePostImage,
+  updatePostImageFromPost,
   deletePostImage,
   deletePostImageFromPost,
 };

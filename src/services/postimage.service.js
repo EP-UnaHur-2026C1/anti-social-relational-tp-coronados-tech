@@ -67,6 +67,23 @@ const remove = async (id) => {
   return true;
 };
 
+const updateInPost = async (postId, imageId, { url }) => {
+  const post = await findPost(postId);
+  if (!post) return { status: "post_not_found" };
+
+  const postImage = await PostImage.findOne({
+    where: { id: imageId, post_id: postId },
+  });
+  if (!postImage) return { status: "image_not_found" };
+
+  if (url) {
+    deleteFileFromUrl(postImage.url);
+    await postImage.update({ url });
+  }
+
+  return { status: "ok", postImage };
+};
+
 const removeFromPost = async (postId, imageId) => {
   const post = await findPost(postId);
   if (!post) return "post_not_found";
@@ -89,6 +106,7 @@ module.exports = {
   create,
   update,
   removeAllByPostId,
+  updateInPost,
   remove,
   removeFromPost,
 };
