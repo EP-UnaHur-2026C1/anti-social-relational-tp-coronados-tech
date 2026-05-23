@@ -8,21 +8,16 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      (Post.belongsTo(models.User, { foreignKey: "userId", as: "user" }),
-        Post.hasMany(models.Comment, { foreignKey: "postId", as: "comments" }),
-        Post.hasMany(models.PostImage, {
-          foreignKey: "postImageId",
-          as: "postImages",
-        }),
-        Post.hasMany(models.Tag, { foreignKey: "tagId", as: "tags" }));
+      (Post.belongsTo(models.User, {foreignKey: "user_id", as: "user" }),
+        Post.hasMany(models.Comment, {foreignKey: "post_id", as: "comments"}),
+        Post.hasMany(models.PostImage, {foreignKey: "post_id", as: "postImages"}),
+        Post.hasMany(models.Tag, {foreignKey: "tag_id", as: "tags" }));
     }
   }
   Post.init(
     {
-      //id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
       description: { type: DataTypes.TEXT, allowNull: false },
-      publicationDate: { type: DataTypes.DATE, allowNull: false },
-      userId: { type: DataTypes.INTEGER, allowNull: false },
+      //publicationDate: { type: DataTypes.DATE, allowNull: false },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
