@@ -29,8 +29,7 @@ const deletePostImagesAndFiles = async (postId) => {
 
 const createPost = async (req, res) => {
   try {
-
-    console.log("CREAR")
+    console.log("CREAR");
     const { description, publicationDate, user_id } = req.body;
 
     const user = await findUserOr404(user_id, res);
@@ -70,7 +69,9 @@ const getPostById = async (req, res) => {
     const post = await Post.findByPk(id, { include: postIncludes });
 
     if (!post) {
-      return res.status(404).json({ message: `Post con id ${id} no encontrado` });
+      return res
+        .status(404)
+        .json({ message: `Post con id ${id} no encontrado` });
     }
 
     res.status(200).json(post);
@@ -88,7 +89,9 @@ const updatePost = async (req, res) => {
     const post = await Post.findByPk(id);
 
     if (!post) {
-      return res.status(404).json({ message: `Post con id ${id} no encontrado` });
+      return res
+        .status(404)
+        .json({ message: `Post con id ${id} no encontrado` });
     }
 
     if (req.body.userId) {
@@ -113,13 +116,17 @@ const deletePost = async (req, res) => {
     const post = await Post.findByPk(id);
 
     if (!post) {
-      return res.status(404).json({ message: `Post con id ${id} no encontrado` });
+      return res
+        .status(404)
+        .json({ message: `Post con id ${id} no encontrado` });
     }
 
     await deletePostImagesAndFiles(id);
     await post.destroy();
 
-    res.status(200).json({ message: `Post con id ${id} eliminado correctamente` });
+    res
+      .status(200)
+      .json({ message: `Post con id ${id} eliminado correctamente` });
   } catch (error) {
     res.status(500).json({
       message: "Error al eliminar el post",
