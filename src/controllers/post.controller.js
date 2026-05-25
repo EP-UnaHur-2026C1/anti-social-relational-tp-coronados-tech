@@ -8,6 +8,12 @@ const postIncludes = [
     attributes: ["id", "nickname", "name", "lastName"],
   },
   { model: PostImage, as: "postImages" },
+  {
+    model: Tag,
+    as: "tags",
+    attributes: ["id", "name"],
+    through: { attributes: [] }, // oculta columnas de la tabla intermedia
+  },
 ];
 
 const findUserOr404 = async (userId, res) => {
@@ -27,10 +33,23 @@ const deletePostImagesAndFiles = async (postId) => {
   }
 };
 
+const resolveTagInstances = async (tags = []) => {
+  if (!Array.isArray(tags) || tags.length === 0) return [];
+  const tagInstances = await Promise.all(
+    tags.map((name) =>
+      Tag.findOrCreate({
+        where: { name: name.trim() },
+        defaults: { name: name.trim() },
+      }).then(([instance]) => instance),
+    ),
+  );
+  return tagInstances;
+};
+
 const createPost = async (req, res) => {
   try {
     console.log("CREAR");
-    const { description, publicationDate, user_id } = req.body;
+    const { description, publicationDate, user_id, tags } = req.body;
 
     const user = await findUserOr404(user_id, res);
     if (!user) return;
@@ -40,6 +59,11 @@ const createPost = async (req, res) => {
       publicationDate,
       user_id,
     });
+
+    const tagInstances = await resolveTagInstances(tags);
+    if (tagInstances.length > 0) {
+      await post.addTags(tagInstances);
+    }
 
     const created = await Post.findByPk(post.id, { include: postIncludes });
     res.status(201).json(created);
@@ -86,6 +110,7 @@ const getPostById = async (req, res) => {
 const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
+    const { tags } = req.body;
     const post = await Post.findByPk(id);
 
     if (!post) {
@@ -100,6 +125,12 @@ const updatePost = async (req, res) => {
     }
 
     await post.update(req.body);
+
+    if (tags !== undefined) {
+      const tagInstances = await resolveTagInstances(tags);
+      await post.setTags(tagInstances); // reemplaza la relación completa
+    }
+
     const updated = await Post.findByPk(id, { include: postIncludes });
     res.status(200).json(updated);
   } catch (error) {
