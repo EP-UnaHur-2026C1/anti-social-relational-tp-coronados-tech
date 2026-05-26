@@ -14,21 +14,18 @@ const userIdField = Joi.number().integer().positive().messages({
   "number.positive": "user_id debe ser mayor a 0",
 });
 
-const publicationDateField = Joi.date().iso().messages({
-  "date.base": "publicationDate debe ser una fecha válida",
-  "date.format": "publicationDate debe estar en formato ISO 8601",
-});
-
 const postSchema = Joi.object({
   description: descriptionField.required(),
   user_id: userIdField.required(),
-  //publicationDate: publicationDateField.optional(),
 });
 
 const updatePostSchema = Joi.object({
   description: descriptionField.optional(),
-  user_id: userIdField.optional(),
-  //publicationDate: publicationDateField.optional(),
-}).min(1);
+})
+  .min(1)
+  .unknown(false)
+  .messages({
+    "object.min": "Debe enviar al menos un campo para actualizar",
+  });
 
 module.exports = { postSchema, updatePostSchema}

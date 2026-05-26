@@ -1,22 +1,22 @@
-
-
 const existValidateMiddleware = (Modelo, field) => {
-    return async (req, res, next) => {
-        console.log("req");
-        console.log(req.body);
-        const id = req.body[field]
-        console.log(field);
-        console.log(id);
+  return async (req, res, next) => {
+    const id = req.params[field] ?? req.body?.[field];
 
-        const entity = await Modelo.findByPk(id)
-        if (!entity) {
-            return res.status(404).json({
-                message: res.__('id_dont_exist', { id, nombreModelo: Modelo.name }),
-            })
-        }
-        
-        next()
+    if (id == null || id === "") {
+      return res.status(400).json({
+        message: res.__("field_required", { field }),
+      });
     }
-}
 
-module.exports = existValidateMiddleware
+    const entity = await Modelo.findByPk(id);
+    if (!entity) {
+      return res.status(404).json({
+        message: res.__("id_dont_exist", { id, nombreModelo: Modelo.name }),
+      });
+    }
+
+    next();
+  };
+};
+
+module.exports = existValidateMiddleware;

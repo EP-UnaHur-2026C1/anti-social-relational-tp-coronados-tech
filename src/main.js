@@ -1,22 +1,22 @@
-const express = require("express");
-const path = require("path");
-const i18n = require('i18n');
-const multer = require("multer");
-const { sequelize } = require("./db/models");
 const dotenv = require("dotenv");
-const PORT = process.env.PORT || 3001;
-
-
-// Configuración
-i18n.configure({
-  locales: ['es'],
-  directory: path.join(__dirname, 'locales'),
-  defaultLocale: process.env.IDIOMA,
-  autoReload: true, // ¡Clave para que sea dinámico! Recarga cambios sin reiniciar
-  updateFiles: false // Evita que i18n escriba nuevos archivos
-});
 dotenv.config();
 
+const express = require("express");
+const path = require("path");
+const i18n = require("i18n");
+const { sequelize } = require("./db/models");
+const errorMiddleware = require("./middlewares/error.middleware");
+
+const PORT = process.env.PORT || 3001;
+const locale = process.env.IDIOMA === "es" ? process.env.IDIOMA : "es";
+
+i18n.configure({
+  locales: ["es"],
+  directory: path.join(__dirname, "locales"),
+  defaultLocale: locale,
+  autoReload: true,
+  updateFiles: false,
+});
 //ROUTE 
 const commentsRouter = require("./routes/comments.route");
 const usersRouter = require("./routes/user.routes");
@@ -31,16 +31,11 @@ app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
 
 
-/*
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/post-images", postImagesRouter);
-app.use((err, req, res, next) => {
-  if (err instanceof multer.MulterError || err.message?.includes("imagen")) {
-    return res.status(400).json({ message: err.message });
-  }
-  next(err);
-});
-*/
+
+app.use(errorMiddleware);
+
 app.listen(PORT, async (err) => {
   if (err) {
     console.error(err.message);
