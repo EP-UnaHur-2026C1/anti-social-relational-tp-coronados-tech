@@ -1,5 +1,32 @@
 {
     "parameter_numeric": "El parametro {{field}} debe ser numerico.",
+    "field_required": "El campo {{field}} es requerido",
     "id_dont_exist": "El elemento con el id {{id}} no exite en el modelo {{nombreModelo}}",
-    "invalid_data" :"Datos de {{nombreModelo}} inválidos"
+    "invalid_data" :"Datos de {{nombreModelo}} inválidos",
+    "error_create_post" : "Error al crear el post",
+    "error_get_posts" : "Error al obtener los posts",
+    "error_get_post" : "Error al obtener el post",
+    "error_update_post" :"Error al actualizar el post",
+    "update_post_no_fields": "Debe enviar al menos un campo para actualizar (por ejemplo: description)",
+    "error_delete_post" : "Error al eliminar el post",
+    "delete_post":  "El Post con id {{id}} eliminado correctamente",
+
+    "no_image_sent": "No se envió ninguna imagen",
+    "upload_unexpected_field": "Campo de archivo no válido: \"{{field}}\". Usá el campo \"image\" (tipo File en form-data).",
+    "upload_file_too_large": "La imagen supera el tamaño máximo permitido (5 MB).",
+    "upload_invalid_type": "Solo se permiten imágenes JPEG, PNG o WebP",
+    "upload_single_image_only": "Solo se permite una imagen. Usá un único campo \"image\".",
+    "upload_error": "Error al subir la imagen",
+    "error_internal": "Error interno del servidor",
+    "postId_required": "post_id es requerido",
+    "error_create_post_image": "Error al crear la imagen del post",
+    "error_get_post_images": "Error al obtener las imágenes",
+    "error_get_post_image": "Error al obtener la imagen",
+    "error_get_post_images_by_post": "Error al obtener las imágenes del post",
+    "error_update_post_image": "Error al actualizar la imagen",
+    "error_delete_post_image": "Error al eliminar la imagen",
+    "error_delete_post_image_from_post": "Error al eliminar la imagen del post",
+    "delete_post_image": "La imagen con id {{id}} eliminada correctamente",
+    "delete_post_image_from_post": "La imagen con id {{imageId}} eliminada del post {{postId}}",
+    "post_image_not_in_post": "La imagen con id {{imageId}} no se encontró en el post {{postId}}"
 }

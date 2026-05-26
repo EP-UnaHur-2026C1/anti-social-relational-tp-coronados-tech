@@ -13,13 +13,15 @@ const {
 const {
   getPostImagesByPost,
   createPostImage,
+  updatePostImageFromPost,
   deletePostImageFromPost,
 } = require("../controllers/postimage.controller");
 
 const schemaValidatorMiddleware = require("../middlewares/validations/schema.middleware");
 const existValidateMiddleware = require("../middlewares/validations/exist.middleware");
+const numericParamValidateMiddleware = require("../middlewares/validations/numeric.middleware");
 
-const { upload } = require("../middlewares/upload.middleware");
+const { uploadPostImage, uploadSingleImage } = require("../middlewares/upload.middleware");
 const {postSchema, updatePostSchema} = require('../schemas/post.schema')
 
 router.get("/", getAllPosts);
@@ -30,27 +32,36 @@ router.post(
   existValidateMiddleware(User, "user_id"),
   createPost
 );
-// 
-  //existValidateMiddleware(user, "user_id"),
 
-/*
 router.get(
-  "/:postId/images",
-  numericParamValidateMiddleware("postId"),
-  existValidateMiddleware(Post, "postId"),
+  "/:id/images",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(Post, "id"),
   getPostImagesByPost
 );
+
 router.post(
-  "/:postId/images",
-  numericParamValidateMiddleware("postId"),
-  existValidateMiddleware(Post, "postId"),
-  upload.single("image"),
+  "/:id/images",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(Post, "id"),
+  uploadPostImage,
   createPostImage
 );
+
+router.patch(
+  "/:id/images/:image_id",
+  numericParamValidateMiddleware("id"),
+  numericParamValidateMiddleware("image_id"),
+  existValidateMiddleware(Post, "id"),
+  uploadSingleImage,
+  updatePostImageFromPost
+);
+
 router.delete(
-  "/:postId/images/:imageId",
-  numericParamValidateMiddleware("postId"),
-  existValidateMiddleware(Post, "postId"),
+  "/:id/images/:image_id",
+  numericParamValidateMiddleware("id"),
+  numericParamValidateMiddleware("image_id"),
+  existValidateMiddleware(Post, "id"),
   deletePostImageFromPost
 );
 
@@ -60,18 +71,20 @@ router.get(
   existValidateMiddleware(Post, "id"),
   getPostById
 );
-router.put(
+
+router.patch(
   "/:id",
+  schemaValidatorMiddleware(updatePostSchema),
   numericParamValidateMiddleware("id"),
   existValidateMiddleware(Post, "id"),
-  schemaValidatorMiddleware(updatePostSchema, "Post"),
   updatePost
 );
+
 router.delete(
   "/:id",
   numericParamValidateMiddleware("id"),
   existValidateMiddleware(Post, "id"),
   deletePost
 );
-*/
+
 module.exports = router;

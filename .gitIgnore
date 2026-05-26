@@ -4,4 +4,5 @@ package-lock.json
 data/*
 uploads/*
 !uploads/posts/
-!uploads/posts/.gitkeep
+!uploads/posts/.gitkeepstat
+uploads/posts/*
