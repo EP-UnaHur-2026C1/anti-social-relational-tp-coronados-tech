@@ -23,6 +23,7 @@ const postSchema = Joi.object({
   description: descriptionField.required(),
   user_id: userIdField.required(),
   //publicationDate: publicationDateField.optional(),
+  tags: Joi.array().items(Joi.string().trim().min(1)).optional(),
 });
 
 const updatePostSchema = Joi.object({
@@ -31,4 +32,4 @@ const updatePostSchema = Joi.object({
   //publicationDate: publicationDateField.optional(),
 }).min(1);
 
-module.exports = { postSchema, updatePostSchema}
+module.exports = { postSchema, updatePostSchema };

@@ -48,7 +48,7 @@ const getCommentsByPost = async (req, res) => {
 const createComment = async (req, res) => {
   const { content, user_id, post_id } = req.body;
 
-  const newComment = await Comment.create({ content, userId, postId });
+  const newComment = await Comment.create({ content, user_id, post_id });
 
   res.status(201).json(newComment);
 };

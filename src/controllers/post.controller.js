@@ -1,5 +1,5 @@
-const { Post, User, PostImage } = require("../db/models");
-const { deleteFileFromUrl } = require("../helpers/fileHelper");
+const { Post, User, PostImage, Tag } = require("../db/models");
+//const { deleteFileFromUrl } = require("../helpers/fileHelper");
 
 const postIncludes = [
   {
@@ -25,24 +25,42 @@ const findUserOr404 = async (userId, res) => {
   return user;
 };
 
-const deletePostImagesAndFiles = async (postId) => {
+/*const deletePostImagesAndFiles = async (postId) => {
   const images = await PostImage.findAll({ where: { postId } });
   for (const image of images) {
     deleteFileFromUrl(image.url);
     await image.destroy();
   }
 };
-
+*/
 const resolveTagInstances = async (tags = []) => {
   if (!Array.isArray(tags) || tags.length === 0) return [];
-  const tagInstances = await Promise.all(
+  /*const tagInstances = await Promise.all(
     tags.map((name) =>
       Tag.findOrCreate({
         where: { name: name.trim() },
         defaults: { name: name.trim() },
       }).then(([instance]) => instance),
     ),
-  );
+  );*/
+  const tagInstances = [];
+
+  for (const name of tags) {
+    const trimmedName = name.trim();
+
+    let tag = await Tag.findOne({
+      where: { name: trimmedName },
+    });
+
+    if (!tag) {
+      tag = await Tag.create({
+        name: trimmedName,
+      });
+    }
+
+    tagInstances.push(tag);
+  }
+
   return tagInstances;
 };
 
