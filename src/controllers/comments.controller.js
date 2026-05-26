@@ -1,48 +1,41 @@
-const { Comment, User, Post } = require("../db/models");
-
-const commentIncludes = [
-  {
-    model: User,
-    as: "user",
-    attributes: ["id", "nickname", "name", "lastName"],
-  },
-  { model: Post, as: "post", attributes: ["id", "description"] },
-];
+const HTTP = require("../config/HttpCode");
+const commentService = require("../services/comment.service");
 
 const getAllComments = async (req, res) => {
-  const comments = await Comment.findAll({ include: commentIncludes });
-  res.status(200).json(comments);
+  const comments = await commentService.findAll();
+  res.status(HTTP.OK).json(comments);
 };
 
 const getCommentById = async (req, res) => {
   const { id } = req.params;
-  const comment = await Comment.findByPk(id, { include: commentIncludes });
-  res.status(200).json(comment);
+  const comment = await commentService.findById(id);
+  res.status(HTTP.OK).json(comment);
 };
 
 const createComment = async (req, res) => {
   const { content, user_id, post_id } = req.body;
 
-  const newComment = await Comment.create({ content, user_id, post_id });
-
-  res.status(201).json(newComment);
+  const created = await commentService.create({
+    content,
+    user_id,
+    post_id,
+  });
+  res.status(HTTP.CREATED).json(created);
 };
 
 const updateComment = async (req, res) => {
   const { id } = req.params;
-  const { content } = req.body;
+  const updated = await commentService.update(id, req.body);
 
-  await comment.update({ content });
-
-  res.status(200).json(comment);
+  res.status(HTTP.OK).json(updated);
 };
 const deleteComment = async (req, res) => {
   const { id } = req.params;
 
-  await comment.destroy();
+  await commentService.remove(id);
 
   res
-    .status(200)
+    .status(HTTP.OK)
     .json({ message: `Comentario con id ${id} eliminado correctamente` });
 };
 

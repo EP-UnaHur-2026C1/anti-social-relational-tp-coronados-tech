@@ -8,8 +8,8 @@ const notFoundPost = (res, id) =>
 
 const createPost = async (req, res) => {
   try {
-    const { description, user_id } = req.body;
-    const created = await postService.create({ description, user_id });
+    const { description, user_id, tags } = req.body;
+    const created = await postService.create({ description, user_id, tags });
     res.status(HTTP.CREATED).json(created);
   } catch (error) {
     res.status(HTTP.BAD_REQUEST).json({
