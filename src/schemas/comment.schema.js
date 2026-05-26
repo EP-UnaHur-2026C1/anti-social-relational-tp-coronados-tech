@@ -30,12 +30,10 @@ const commentSchema = Joi.object({
   content: contentField.required(),
   post_id: postIdField.required(),
   user_id: userIdField.required(),
-  isVisible: isVisibleField.optional(),
 });
 
 const updateCommentSchema = Joi.object({
   content: contentField.optional(),
-  isVisible: isVisibleField.optional(),
 }).min(1);
 
 module.exports = { commentSchema, updateCommentSchema };
