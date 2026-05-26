@@ -2,7 +2,7 @@ const existValidateMiddleware = (Modelo, field) => {
   return async (req, res, next) => {
     console.log("req");
     console.log(req.body);
-    const id = req.body[field] ?? req.params[field];
+    const id = req.body?.[field] ?? req.params[field];
     console.log(field);
     console.log(id);
 

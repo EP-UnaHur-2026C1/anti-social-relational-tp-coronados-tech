@@ -17,10 +17,8 @@ const schemaValidatorMiddleware = require("../middlewares/validations/schema.mid
 const existValidateMiddleware = require("../middlewares/validations/exist.middleware");
 const numericParamValidateMiddleware = require("../middlewares/validations/numeric.middleware");
 
-// GET /comments
 router.get("/", getAllComments);
 
-// GET /comments/:id
 router.get(
   "/:id",
   numericParamValidateMiddleware("id"),
@@ -28,14 +26,6 @@ router.get(
   getCommentById,
 );
 
-// GET /comments/post/:postId
-router.get(
-  "/post/:post_id",
-  numericParamValidateMiddleware("post_id"),
-  getCommentsByPost,
-);
-
-// POST /comments
 router.post(
   "/",
   schemaValidatorMiddleware(commentSchema),
@@ -44,7 +34,6 @@ router.post(
   createComment,
 );
 
-// PUT /comments/:id
 router.put(
   "/:id",
   numericParamValidateMiddleware("id"),
@@ -53,7 +42,6 @@ router.put(
   updateComment,
 );
 
-// DELETE /comments/:id
 router.delete(
   "/:id",
   numericParamValidateMiddleware("id"),

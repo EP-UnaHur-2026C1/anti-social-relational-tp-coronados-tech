@@ -4,7 +4,7 @@ const tagIncludes = [
   {
     model: Post,
     as: "posts",
-    attributes: ["id", "description", "createdAt"],
+    attributes: ["id", "description"],
     through: { attributes: [] },
   },
 ];

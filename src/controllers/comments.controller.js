@@ -1,7 +1,4 @@
 const { Comment, User, Post } = require("../db/models");
-const {
-  updateCommentVisibility,
-} = require("../helpers/updateCommentVisibility");
 
 const commentIncludes = [
   {
@@ -23,28 +20,6 @@ const getCommentById = async (req, res) => {
   res.status(200).json(comment);
 };
 
-const getCommentsByPost = async (req, res) => {
-  const { post_id } = req.params;
-
-  const post = await Post.findByPk(post_id);
-
-  await updateCommentVisibility({ post_id });
-
-  const comments = await Comment.findAll({
-    where: { post_id },
-    include: [
-      {
-        model: User,
-        as: "user",
-        attributes: ["id", "nickname", "name", "lastName"],
-      },
-    ],
-    order: [["createdAt", "DESC"]],
-  });
-
-  res.status(200).json(comments);
-};
-
 const createComment = async (req, res) => {
   const { content, user_id, post_id } = req.body;
 
@@ -55,9 +30,9 @@ const createComment = async (req, res) => {
 
 const updateComment = async (req, res) => {
   const { id } = req.params;
-  const { content, isVisible } = req.body;
+  const { content } = req.body;
 
-  await comment.update({ content, isVisible });
+  await comment.update({ content });
 
   res.status(200).json(comment);
 };
@@ -74,7 +49,6 @@ const deleteComment = async (req, res) => {
 module.exports = {
   getAllComments,
   getCommentById,
-  getCommentsByPost,
   createComment,
   updateComment,
   deleteComment,

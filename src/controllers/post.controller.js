@@ -1,6 +1,6 @@
-const { Post, User, PostImage, Tag } = require("../db/models");
+const { Post, User, PostImage, Tag, Comment } = require("../db/models");
 //const { deleteFileFromUrl } = require("../helpers/fileHelper");
-
+const { filterCommentsByMonths } = require("../helpers/filterCommentsByMonths");
 const postIncludes = [
   {
     model: User,
@@ -13,6 +13,11 @@ const postIncludes = [
     as: "tags",
     attributes: ["id", "name"],
     through: { attributes: [] }, // oculta columnas de la tabla intermedia
+  },
+  {
+    model: Comment,
+    as: "comments",
+    required: false,
   },
 ];
 
@@ -96,7 +101,14 @@ const createPost = async (req, res) => {
 const getAllPosts = async (req, res) => {
   try {
     const posts = await Post.findAll({ include: postIncludes });
-    res.status(200).json(posts);
+
+    const filteredPosts = posts.map((post) => {
+      post.comments = filterCommentsByMonths(post.comments);
+
+      return post;
+    });
+
+    res.status(200).json(filteredPosts);
   } catch (error) {
     res.status(500).json({
       message: "Error al obtener los posts",
@@ -115,6 +127,7 @@ const getPostById = async (req, res) => {
         .status(404)
         .json({ message: `Post con id ${id} no encontrado` });
     }
+    post.comments = filterCommentsByMonths(post.comments);
 
     res.status(200).json(post);
   } catch (error) {
