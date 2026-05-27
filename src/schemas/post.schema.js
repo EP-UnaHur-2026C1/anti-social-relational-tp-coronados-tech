@@ -14,13 +14,27 @@ const userIdField = Joi.number().integer().positive().messages({
   "number.positive": "user_id debe ser mayor a 0",
 });
 
+const tagsField = Joi.array()
+  .items(Joi.string().trim().min(1).max(50))
+  .min(1)
+  .messages({
+    "array.base": "tags debe ser un array",
+    "array.min": "debe enviar al menos un tag",
+    "string.base": "cada tag debe ser texto",
+    "string.empty": "los tags no pueden estar vacíos",
+    "string.min": "cada tag debe tener al menos {#limit} carácter",
+    "string.max": "cada tag debe tener máximo {#limit} caracteres",
+  });
+
 const postSchema = Joi.object({
   description: descriptionField.required(),
   user_id: userIdField.required(),
+  tags: tagsField.optional(),
 });
 
 const updatePostSchema = Joi.object({
   description: descriptionField.optional(),
+  tags: tagsField.optional(),
 })
   .min(1)
   .unknown(false)
@@ -28,4 +42,4 @@ const updatePostSchema = Joi.object({
     "object.min": "Debe enviar al menos un campo para actualizar",
   });
 
-module.exports = { postSchema, updatePostSchema}
+module.exports = { postSchema, updatePostSchema };

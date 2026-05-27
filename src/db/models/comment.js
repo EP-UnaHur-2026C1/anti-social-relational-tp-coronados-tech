@@ -16,11 +16,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       //id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
       content: { type: DataTypes.TEXT, allowNull: false },
-      isVisible: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: true,
-      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,

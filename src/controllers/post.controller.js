@@ -8,8 +8,8 @@ const notFoundPost = (res, id) =>
 
 const createPost = async (req, res) => {
   try {
-    const { description, user_id } = req.body;
-    const created = await postService.create({ description, user_id });
+    const { description, user_id, tags } = req.body;
+    const created = await postService.create({ description, user_id, tags });
     res.status(HTTP.CREATED).json(created);
   } catch (error) {
     res.status(HTTP.BAD_REQUEST).json({
@@ -39,6 +39,7 @@ const getPostById = async (req, res) => {
     if (!post) {
       return notFoundPost(res, id);
     }
+    post.comments = filterCommentsByMonths(post.comments);
 
     res.status(HTTP.OK).json(post);
   } catch (error) {

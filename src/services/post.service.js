@@ -1,4 +1,4 @@
-const { Post, User, PostImage } = require("../db/models");
+const { Post, User, PostImage, Comment, Tag } = require("../db/models");
 const { removeAllByPostId } = require("./postimage.service");
 
 const postIncludes = [
@@ -8,15 +8,35 @@ const postIncludes = [
     attributes: ["id", "nickname", "name", "lastName"],
   },
   { model: PostImage, as: "postImages" },
+  { model: Tag, as: "tags", attributes: ["id", "name"] },
+  { model: Comment, as: "comments", attributes: ["id", "content"] },
 ];
 
 const findAll = () => Post.findAll({ include: postIncludes });
 
 const findById = (id) => Post.findByPk(id, { include: postIncludes });
 
-const create = async ({ description, user_id }) => {
+const create = async ({ description, user_id, tags }) => {
   const post = await Post.create({ description, user_id });
-  return Post.findByPk(post.id, { include: postIncludes });
+  if (tags && tags.length > 0) {
+    const tagInstances = [];
+
+    for (const tagName of tags) {
+      const normalized = tagName.trim().toLowerCase();
+
+      const [tag] = await Tag.findOrCreate({
+        where: { name: normalized },
+      });
+
+      tagInstances.push(tag);
+    }
+
+    await post.setTags(tagInstances);
+  }
+
+  return Post.findByPk(post.id, {
+    include: postIncludes,
+  });
 };
 
 const update = async (id, { description }) => {
