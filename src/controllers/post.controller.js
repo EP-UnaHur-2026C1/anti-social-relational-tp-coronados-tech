@@ -1,5 +1,6 @@
 const HTTP = require("../config/HttpCode");
 const postService = require("../services/post.service");
+const { filterCommentsByMonths } = require("../helpers/filterCommentsByMonths");
 
 const createPost = async (req, res) => {
     const { description, user_id, tags } = req.body;

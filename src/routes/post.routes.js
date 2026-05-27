@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Post, User } = require("../db/models");
+const { Post, User, PostImage } = require("../db/models");
 
 const {
   createPost,
@@ -13,8 +13,8 @@ const {
 const {
   getPostImagesByPost,
   createPostImage,
-  updatePostImageFromPost,
-  deletePostImageFromPost,
+  updatePostImage,
+  deletePostImage,
 } = require("../controllers/postimage.controller");
 
 const schemaValidatorMiddleware = require("../middlewares/validations/schema.middleware");
@@ -23,7 +23,7 @@ const querySchemaValidatorMiddleware =
 const existValidateMiddleware = require("../middlewares/validations/exist.middleware");
 const numericParamValidateMiddleware = require("../middlewares/validations/numeric.middleware");
 
-const { uploadPostImage, uploadSingleImage } = require("../middlewares/upload.middleware");
+const { uploadSingleImage } = require("../middlewares/upload.middleware");
 const {
   postSchema,
   updatePostSchema,
@@ -33,6 +33,7 @@ const {
 router.get(
   "/",
   querySchemaValidatorMiddleware(getAllPostsQuerySchema),
+  existValidateMiddleware(User, "user_id", { optional: true }),
   getAllPosts
 );
 
@@ -54,7 +55,7 @@ router.post(
   "/:id/images",
   numericParamValidateMiddleware("id"),
   existValidateMiddleware(Post, "id"),
-  uploadPostImage,
+  uploadSingleImage,
   createPostImage
 );
 
@@ -63,8 +64,9 @@ router.patch(
   numericParamValidateMiddleware("id"),
   numericParamValidateMiddleware("image_id"),
   existValidateMiddleware(Post, "id"),
+  existValidateMiddleware(PostImage, "image_id"),
   uploadSingleImage,
-  updatePostImageFromPost
+  updatePostImage
 );
 
 router.delete(
@@ -72,7 +74,8 @@ router.delete(
   numericParamValidateMiddleware("id"),
   numericParamValidateMiddleware("image_id"),
   existValidateMiddleware(Post, "id"),
-  deletePostImageFromPost
+  existValidateMiddleware(PostImage, "image_id"),
+  deletePostImage
 );
 
 router.get(
