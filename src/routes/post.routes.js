@@ -18,13 +18,23 @@ const {
 } = require("../controllers/postimage.controller");
 
 const schemaValidatorMiddleware = require("../middlewares/validations/schema.middleware");
+const querySchemaValidatorMiddleware =
+  require("../middlewares/validations/schema.middleware").querySchemaValidatorMiddleware;
 const existValidateMiddleware = require("../middlewares/validations/exist.middleware");
 const numericParamValidateMiddleware = require("../middlewares/validations/numeric.middleware");
 
 const { uploadPostImage, uploadSingleImage } = require("../middlewares/upload.middleware");
-const {postSchema, updatePostSchema} = require('../schemas/post.schema')
+const {
+  postSchema,
+  updatePostSchema,
+  getAllPostsQuerySchema,
+} = require("../schemas/post.schema");
 
-router.get("/", getAllPosts);
+router.get(
+  "/",
+  querySchemaValidatorMiddleware(getAllPostsQuerySchema),
+  getAllPosts
+);
 
 router.post(
   "/",

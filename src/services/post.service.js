@@ -12,7 +12,10 @@ const postIncludes = [
   { model: Comment, as: "comments", attributes: ["id", "content"] },
 ];
 
-const findAll = () => Post.findAll({ include: postIncludes });
+const findAll = ({ user_id } = {}) => {
+  const where = user_id !== undefined ? { user_id } : {};
+  return Post.findAll({ where, include: postIncludes });
+};
 
 const findById = (id) => Post.findByPk(id, { include: postIncludes });
 
