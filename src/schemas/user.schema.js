@@ -79,7 +79,7 @@ const birthDate = Joi.date()
     });
 
 const gender = Joi.string()
-    .valid("male", "female", "other")
+    .valid("femenino", "masculino", "otro")
     .required()
     .messages({
         "string.base": "El género debe ser un string",
@@ -96,4 +96,4 @@ const userSchema = Joi.object({
   gender,
 });
 
-module.exports = userSchema;
+module.exports = { userSchema, updateUserSchema };
