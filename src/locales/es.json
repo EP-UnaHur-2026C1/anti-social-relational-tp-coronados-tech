@@ -1,7 +1,7 @@
 {
     "parameter_numeric": "El parametro {{field}} debe ser numerico.",
     "field_required": "El campo {{field}} es requerido",
-    "id_dont_exist": "El elemento con el id {{id}} no exite en el modelo {{nombreModelo}}",
+    "id_dont_exist": "El elemento con el id {{id}} no existe en el modelo {{nombreModelo}}",
     "invalid_data" :"Datos de {{nombreModelo}} inválidos",
     "error_create_post" : "Error al crear el post",
     "error_get_posts" : "Error al obtener los posts",
@@ -10,6 +10,7 @@
     "update_post_no_fields": "Debe enviar al menos un campo para actualizar (por ejemplo: description)",
     "error_delete_post" : "Error al eliminar el post",
     "delete_post":  "El Post con id {{id}} eliminado correctamente",
+    "user_already_exists": "El campo {{field}} ya se encuentra en uso por otro usuario.",
 
     "no_image_sent": "No se envió ninguna imagen",
     "upload_unexpected_field": "Campo de archivo no válido: \"{{field}}\". Usá el campo \"image\" (tipo File en form-data).",
