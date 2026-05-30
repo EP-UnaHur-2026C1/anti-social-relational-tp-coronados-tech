@@ -86,6 +86,18 @@ const gender = Joi.string()
         "string.empty": "El género no puede estar vacío",
     });
 
+const updateUserSchema = Joi.object({
+  nickname: nickname.optional(),
+  name: name.optional(),
+  lastName: lastName.optional(),
+  email: email.optional(),
+  password: password.optional(),
+  birthDate: birthDate.optional(),
+  gender: gender.optional(),
+}).min(1).messages({
+  "object.min": "Al menos un campo debe ser proporcionado para actualizar el usuario"
+});
+
 const userSchema = Joi.object({
   nickname,
   name,
