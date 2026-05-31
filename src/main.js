@@ -6,32 +6,10 @@ const path = require("path");
 const i18n = require("i18n");
 const { sequelize } = require("./db/models");
 const errorMiddleware = require("./middlewares/error.middleware");
-const { filterCommentsByMonths } = require("./helpers/filterCommentsByMonths");
+const filterPostCommentsMiddleware = require("./middlewares/filterPostComments.middleware");
 
 const PORT = process.env.PORT || 3001;
 const locale = process.env.IDIOMA === "es" ? process.env.IDIOMA : "es";
-
-const filterPostCommentsMiddleware = (req, res, next) => {
-  const originalJson = res.json.bind(res);
-
-  res.json = (body) => {
-    if (req.method === "GET") {
-      if (Array.isArray(body)) {
-        body.forEach((post) => {
-          if (post?.comments) {
-            post.comments = filterCommentsByMonths(post.comments);
-          }
-        });
-      } else if (body?.comments) {
-        body.comments = filterCommentsByMonths(body.comments);
-      }
-    }
-
-    return originalJson(body);
-  };
-
-  next();
-};
 
 i18n.configure({
   locales: ["es"],
