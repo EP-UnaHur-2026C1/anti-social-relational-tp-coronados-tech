@@ -8,6 +8,7 @@ const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
 const { sequelize } = require("./db/models");
 const errorMiddleware = require("./middlewares/error.middleware");
+const filterPostCommentsMiddleware = require("./middlewares/filterPostComments.middleware");
 
 const PORT = process.env.PORT || 3001;
 const locale = process.env.IDIOMA === "es" ? process.env.IDIOMA : "es";
@@ -38,7 +39,8 @@ app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/comments", commentsRouter);
 app.use("/users", usersRouter);
-app.use("/posts", postsRouter);
+
+app.use("/posts", filterPostCommentsMiddleware, postsRouter);
 app.use("/tags", tagsRouter);
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
@@ -51,6 +53,7 @@ app.listen(PORT, async (err) => {
     console.error(err.message);
     process.exit(1);
   }
-  await sequelize.sync({ force: true });
+  await sequelize.authenticate();
+  await sequelize.sync();
   console.log(`App iniciada en el puerto ${PORT}`);
 });
