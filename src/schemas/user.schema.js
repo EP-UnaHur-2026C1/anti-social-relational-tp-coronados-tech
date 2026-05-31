@@ -84,6 +84,8 @@ const gender = Joi.string()
     .messages({
         "string.base": "El género debe ser un string",
         "string.empty": "El género no puede estar vacío",
+        "any.required": "El género es obligatorio",
+        "any.only": "El género debe ser 'femenino', 'masculino' u 'otro'"
     });
 
 const updateUserSchema = Joi.object({
