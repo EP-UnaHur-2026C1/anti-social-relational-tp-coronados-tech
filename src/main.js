@@ -4,6 +4,8 @@ dotenv.config();
 const express = require("express");
 const path = require("path");
 const i18n = require("i18n");
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
 const { sequelize } = require("./db/models");
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -22,14 +24,22 @@ const commentsRouter = require("./routes/comments.route");
 const usersRouter = require("./routes/user.routes");
 const postsRouter = require("./routes/post.routes");
 const postImagesRouter = require("./routes/postimage.routes");
+const tagsRouter = require("./routes/tag.routes");
+
+const swaggerDocument = YAML.load(
+  path.join(__dirname, "../docs/swagger.yaml"),
+);
+
 const app = express();
 
 app.use(i18n.init);
 app.use(express.json());
+app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.use("/comments", commentsRouter);
 app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
-
+app.use("/tags", tagsRouter);
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/post-images", postImagesRouter);
@@ -41,6 +51,7 @@ app.listen(PORT, async (err) => {
     console.error(err.message);
     process.exit(1);
   }
-  await sequelize.sync({ force: true });
+  await sequelize.authenticate();
+  await sequelize.sync();
   console.log(`App iniciada en el puerto ${PORT}`);
 });
