@@ -79,7 +79,7 @@ const birthDate = Joi.date()
     });
 
 const gender = Joi.string()
-    .valid("femenino", "masculino", "otro")
+    .valid("femenino", "Femenino", "masculino", "Masculino", "otro", "Otro")
     .required()
     .messages({
         "string.base": "El género debe ser un string",
