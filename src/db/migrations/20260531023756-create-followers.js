@@ -14,7 +14,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: "Users", // Asegurate de que tu tabla de usuarios se llame "Users" en la base de datos
+          model: "Users",
           key: "id"
         },
         onDelete: "CASCADE",
