@@ -25,7 +25,7 @@ const create = async ({ content, user_id, post_id }) => {
         post_id,
     });
 
-    postCache.invalidatePost(post_id);
+    postCache.deletePost(post_id);
 
     return Comment.findByPk(comment.id, {
         include: commentIncludes,
@@ -41,6 +41,8 @@ const update = async (id, { content }) => {
 
     await comment.update({ content });
 
+    postCache.deletePost(comment.post_id);
+
     return Comment.findByPk(id, {
         include: commentIncludes,
     });
@@ -53,7 +55,7 @@ const remove = async (id) => {
 
     const { post_id } = comment;
     await comment.destroy();
-    postCache.invalidatePost(post_id);
+    postCache.deletePost(post_id);
 
     return true;
 };

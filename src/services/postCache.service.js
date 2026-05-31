@@ -48,8 +48,8 @@ const deleteAll = () => {
 module.exports = {
     get,
     set,
-    invalidatePost: deletePost,
-    invalidateAll: deleteAll,
+    deletePost: deletePost,
+    deleteAll: deleteAll,
     isEnabled: () => enabled,
     ttlSeconds: () => ttlMs / 1000,
 };
