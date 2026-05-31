@@ -55,12 +55,6 @@ const followUser = async (req, res) => {
         });
     }
 
-    if (!result) {
-        return res.status(HTTP.NOT_FOUND).json({
-            message: res.__("follow_users_not_found"),
-        });
-    }
-
     res.status(HTTP.CREATED).json({
         message: res.__("follow_success"),
         following_id: Number(id),
@@ -72,12 +66,6 @@ const unfollowUser = async (req, res) => {
     const { id } = req.params;
     const { follower_id } = req.body;
     const result = await followerService.unfollow(id, follower_id);
-
-    if (!result) {
-        return res.status(HTTP.NOT_FOUND).json({
-            message: res.__("follow_users_not_found"),
-        });
-    }
 
     res.status(HTTP.OK).json({
         message: res.__("unfollow_success"),
