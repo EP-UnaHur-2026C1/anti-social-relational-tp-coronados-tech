@@ -1,74 +1,43 @@
-const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
-const HTTP = require("../config/HttpCode");
-const HttpError = require("../helpers/HttpError");
 const { mapUploadError } = require("../helpers/uploadError.helper");
+const { createStorage, MB } = require("../services/storage.service");
 
-const UPLOAD_DIR = path.join(__dirname, "../../uploads/posts");
+const POST_IMAGE_UPLOAD_DIR = path.join(__dirname, "../../uploads/posts");
+const POST_IMAGE_MIMES = ["image/jpeg", "image/png", "image/webp"];
+const POST_IMAGE_MAX_SIZE = 5 * MB;
 
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, UPLOAD_DIR);
-  },
-  filename: (_req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const ext = path.extname(file.originalname);
-    cb(null, `${uniqueSuffix}${ext}`);
-  },
+const postImageStorage = createStorage({
+  destination: POST_IMAGE_UPLOAD_DIR,
+  allowedMimeTypes: POST_IMAGE_MIMES,
+  maxFileSize: POST_IMAGE_MAX_SIZE,
 });
 
-const fileFilter = (_req, file, cb) => {
-  const allowed = ["image/jpeg", "image/png", "image/webp"];
-  if (allowed.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Solo se permiten imágenes JPEG, PNG o WebP"), false);
+const respondUploadError = (res, { status, messageKey, params = {} }) =>
+  res.status(status).json({ message: res.__(messageKey, params) });
+
+const handleUploadError = (err, res, next, errorConfig) => {
+  const mapped = mapUploadError(err, errorConfig);
+  if (mapped) {
+    respondUploadError(res, mapped);
+    return true;
   }
+  if (err) {
+    next(err);
+    return true;
+  }
+  return false;
 };
 
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 },
-});
-
-const ACCEPTED_IMAGE_FIELDS = [
-  { name: "image", maxCount: 1 },
-  { name: "file", maxCount: 1 },
-];
-
-const wrapMulter = (multerMiddleware) => (req, res, next) => {
-  multerMiddleware(req, res, (err) => {
-    const httpError = mapUploadError(err);
-    if (httpError) return next(httpError);
-    if (err) return next(err);
+const wrapSingle = (fieldName) => (req, res, next) => {
+  postImageStorage.upload.single(fieldName)(req, res, (err) => {
+    if (handleUploadError(err, res, next, postImageStorage.errorConfig)) return;
     next();
   });
 };
 
-const uploadPostImage = (req, res, next) => {
-  upload.fields(ACCEPTED_IMAGE_FIELDS)(req, res, (err) => {
-    const httpError = mapUploadError(err);
-    if (httpError) return next(httpError);
-    if (err) return next(err);
+const uploadSingleImage = wrapSingle("image");
 
-    const imageFiles = req.files?.image ?? [];
-    const fileFiles = req.files?.file ?? [];
-
-    if (imageFiles.length + fileFiles.length > 1) {
-      return next(new HttpError(HTTP.BAD_REQUEST, "upload_single_image_only"));
-    }
-
-    req.file = imageFiles[0] ?? fileFiles[0];
-    next();
-  });
+module.exports = {
+  uploadSingleImage,
+  UPLOAD_DIR: POST_IMAGE_UPLOAD_DIR,
 };
-
-const uploadSingleImage = wrapMulter(upload.single("image"));
-
-module.exports = { upload, uploadPostImage, uploadSingleImage, UPLOAD_DIR };

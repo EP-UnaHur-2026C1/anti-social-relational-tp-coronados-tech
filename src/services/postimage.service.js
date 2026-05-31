@@ -1,19 +1,11 @@
 const { PostImage, Post } = require("../db/models");
 const { deleteFileFromUrl } = require("../helpers/fileHelper");
 
-const postInclude = {
-  model: Post,
-  as: "post",
-  attributes: ["id", "description"],
-};
-
-const defaultInclude = [postInclude];
-
 const findPost = (postId) => Post.findByPk(postId);
 
-const findAll = () => PostImage.findAll({ include: defaultInclude });
+const findAll = () => PostImage.findAll();
 
-const findById = (id) => PostImage.findByPk(id, { include: defaultInclude });
+const findById = (id) => PostImage.findByPk(id);
 
 const findByPostId = async (postId) => {
   const post = await findPost(postId);
@@ -21,7 +13,6 @@ const findByPostId = async (postId) => {
 
   const images = await PostImage.findAll({
     where: { post_id: postId },
-    include: defaultInclude,
   });
 
   return { post, images };
@@ -29,12 +20,31 @@ const findByPostId = async (postId) => {
 
 const create = ({ postId, url }) => PostImage.create({ url, post_id: postId });
 
-const update = async (id, { postId, url }) => {
-  const postImage = await PostImage.findByPk(id);
-  if (!postImage) return { status: "not_found" };
+const findScoped = async (id, postId) => {
+  const where = { id };
+  if (postId != null) where.post_id = postId;
+
+  const postImage = await PostImage.findOne({ where });
+  if (postImage) return { postImage };
 
   if (postId != null) {
     const post = await findPost(postId);
+    if (!post) return { status: "post_not_found" };
+    return { status: "image_not_found" };
+  }
+
+  return { status: "not_found" };
+};
+
+const update = async (id, { postId, url, newPostId }) => {
+  const scoped = await findScoped(id, postId);
+  if (scoped.status) return scoped;
+
+  const { postImage } = scoped;
+
+  const targetPostId = newPostId ?? postImage.post_id;
+  if (newPostId != null) {
+    const post = await findPost(newPostId);
     if (!post) return { status: "post_not_found" };
   }
 
@@ -43,7 +53,7 @@ const update = async (id, { postId, url }) => {
   }
 
   await postImage.update({
-    post_id: postId ?? postImage.post_id,
+    post_id: targetPostId,
     url: url ?? postImage.url,
   });
 
@@ -58,44 +68,13 @@ const removeAllByPostId = async (postId) => {
   }
 };
 
-const remove = async (id) => {
-  const postImage = await PostImage.findByPk(id);
-  if (!postImage) return false;
+const remove = async (id, { postId } = {}) => {
+  const scoped = await findScoped(id, postId);
+  if (scoped.status) return scoped;
 
-  deleteFileFromUrl(postImage.url);
-  await postImage.destroy();
-  return true;
-};
-
-const updateInPost = async (postId, imageId, { url }) => {
-  const post = await findPost(postId);
-  if (!post) return { status: "post_not_found" };
-
-  const postImage = await PostImage.findOne({
-    where: { id: imageId, post_id: postId },
-  });
-  if (!postImage) return { status: "image_not_found" };
-
-  if (url) {
-    deleteFileFromUrl(postImage.url);
-    await postImage.update({ url });
-  }
-
-  return { status: "ok", postImage };
-};
-
-const removeFromPost = async (postId, imageId) => {
-  const post = await findPost(postId);
-  if (!post) return "post_not_found";
-
-  const postImage = await PostImage.findOne({
-    where: { id: imageId, post_id: postId },
-  });
-  if (!postImage) return "image_not_found";
-
-  deleteFileFromUrl(postImage.url);
-  await postImage.destroy();
-  return "ok";
+  deleteFileFromUrl(scoped.postImage.url);
+  await scoped.postImage.destroy();
+  return { status: "ok" };
 };
 
 module.exports = {
@@ -106,7 +85,5 @@ module.exports = {
   create,
   update,
   removeAllByPostId,
-  updateInPost,
   remove,
-  removeFromPost,
 };
