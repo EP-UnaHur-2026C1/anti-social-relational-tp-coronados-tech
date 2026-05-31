@@ -1,6 +1,5 @@
 const HTTP = require("../config/HttpCode");
 const postService = require("../services/post.service");
-const { filterCommentsByMonths } = require("../helpers/filterCommentsByMonths");
 
 const createPost = async (req, res) => {
     const { description, user_id, tags } = req.body;
@@ -17,7 +16,6 @@ const getAllPosts = async (req, res) => {
 const getPostById = async (req, res) => {
     const { id } = req.params;
     const post = await postService.findById(id);
-    post.comments = filterCommentsByMonths(post.comments);
     res.status(HTTP.OK).json(post);
 };
 
