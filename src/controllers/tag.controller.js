@@ -1,4 +1,4 @@
-const HTTP = require("../constants/HttpCode");
+const HTTP = require("../config/HttpCode");
 
 const tagService = require("../services/tag.service");
 
