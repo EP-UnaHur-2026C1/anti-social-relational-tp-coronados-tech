@@ -4,8 +4,6 @@ dotenv.config();
 const express = require("express");
 const path = require("path");
 const i18n = require("i18n");
-const swaggerUi = require("swagger-ui-express");
-const YAML = require("yamljs");
 const { sequelize } = require("./db/models");
 const errorMiddleware = require("./middlewares/error.middleware");
 const filterPostCommentsMiddleware = require("./middlewares/filterPostComments.middleware");
@@ -27,13 +25,23 @@ const postsRouter = require("./routes/post.routes");
 const postImagesRouter = require("./routes/postimage.routes");
 const tagsRouter = require("./routes/tag.routes");
 
-const swaggerDocument = YAML.load(path.join(__dirname, "../docs/swagger.yaml"));
-
 const app = express();
+
+const enableSwagger =
+    process.env.NODE_ENV !== "production" ||
+    process.env.ENABLE_SWAGGER === "true";
 
 app.use(i18n.init);
 app.use(express.json());
-app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+if (enableSwagger) {
+    const swaggerUi = require("swagger-ui-express");
+    const YAML = require("yamljs");
+    const swaggerDocument = YAML.load(
+        path.join(__dirname, "../docs/swagger.yaml"),
+    );
+    app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+}
 
 app.use("/comments", commentsRouter);
 app.use("/users", usersRouter);
