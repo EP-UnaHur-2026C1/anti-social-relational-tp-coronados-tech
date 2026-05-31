@@ -9,25 +9,45 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      nickName: {
-        type: Sequelize.STRING
+      nickname: {
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false
+      },
+      name: { 
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      lastName: { 
+        type: Sequelize.STRING,
+        allowNull: false
       },
       email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false
+      },
+      password: { 
+        type: Sequelize.STRING,
+        allowNull: false
       },
       birthDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       gender: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     });
   },
