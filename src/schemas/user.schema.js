@@ -79,12 +79,26 @@ const birthDate = Joi.date()
     });
 
 const gender = Joi.string()
-    .valid("male", "female", "other")
+    .valid("femenino", "Femenino", "masculino", "Masculino", "otro", "Otro")
     .required()
     .messages({
         "string.base": "El género debe ser un string",
         "string.empty": "El género no puede estar vacío",
+        "any.required": "El género es obligatorio",
+        "any.only": "El género debe ser 'femenino', 'masculino' u 'otro'"
     });
+
+const updateUserSchema = Joi.object({
+  nickname: nickname.optional(),
+  name: name.optional(),
+  lastName: lastName.optional(),
+  email: email.optional(),
+  password: password.optional(),
+  birthDate: birthDate.optional(),
+  gender: gender.optional(),
+}).min(1).messages({
+  "object.min": "Al menos un campo debe ser proporcionado para actualizar el usuario"
+});
 
 const userSchema = Joi.object({
   nickname,
@@ -96,4 +110,4 @@ const userSchema = Joi.object({
   gender,
 });
 
-module.exports = userSchema;
+module.exports = { userSchema, updateUserSchema };
