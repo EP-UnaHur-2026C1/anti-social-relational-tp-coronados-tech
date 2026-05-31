@@ -43,7 +43,6 @@ app.use("/users", usersRouter);
 app.use("/posts", filterPostCommentsMiddleware, postsRouter);
 app.use("/tags", tagsRouter);
 
-
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/post-images", postImagesRouter);
 
