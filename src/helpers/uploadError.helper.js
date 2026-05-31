@@ -1,26 +1,43 @@
 const multer = require("multer");
 const HTTP = require("../config/HttpCode");
-const HttpError = require("./HttpError");
 
-const mapUploadError = (err) => {
+const mapUploadError = (
+  err,
+  {
+    invalidTypeMessageKey = "upload_invalid_type",
+    fileTooLargeMessageKey = "upload_file_too_large",
+    maxFileSize,
+  } = {}
+) => {
   if (!err) return null;
-  if (err instanceof HttpError) return err;
 
   if (err instanceof multer.MulterError) {
     switch (err.code) {
-      case "LIMIT_UNEXPECTED_FILE":
-        return new HttpError(HTTP.BAD_REQUEST, "upload_unexpected_field", {
-          field: err.field,
-        });
       case "LIMIT_FILE_SIZE":
-        return new HttpError(HTTP.BAD_REQUEST, "upload_file_too_large");
+        return {
+          status: HTTP.BAD_REQUEST,
+          messageKey: fileTooLargeMessageKey,
+          params: maxFileSize
+            ? { maxSizeMB: Math.round(maxFileSize / (1024 * 1024)) }
+            : {},
+        };
+      case "LIMIT_FILE_COUNT":
+      case "LIMIT_UNEXPECTED_FILE":
+        return {
+          status: HTTP.BAD_REQUEST,
+          messageKey:
+            err.code === "LIMIT_FILE_COUNT"
+              ? "upload_single_image_only"
+              : "upload_unexpected_field",
+          params: err.field ? { field: err.field } : {},
+        };
       default:
-        return new HttpError(HTTP.BAD_REQUEST, "upload_error");
+        return { status: HTTP.BAD_REQUEST, messageKey: "upload_error" };
     }
   }
 
-  if (err.message?.includes("Solo se permiten")) {
-    return new HttpError(HTTP.BAD_REQUEST, "upload_invalid_type");
+  if (err.message === invalidTypeMessageKey) {
+    return { status: HTTP.BAD_REQUEST, messageKey: invalidTypeMessageKey };
   }
 
   return null;

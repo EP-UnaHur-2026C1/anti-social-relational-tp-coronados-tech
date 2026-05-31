@@ -13,10 +13,11 @@
 
     "no_image_sent": "No se envió ninguna imagen",
     "upload_unexpected_field": "Campo de archivo no válido: \"{{field}}\". Usá el campo \"image\" (tipo File en form-data).",
-    "upload_file_too_large": "La imagen supera el tamaño máximo permitido (5 MB).",
+    "upload_file_too_large": "El archivo supera el tamaño máximo permitido ({{maxSizeMB}} MB).",
     "upload_invalid_type": "Solo se permiten imágenes JPEG, PNG o WebP",
     "upload_single_image_only": "Solo se permite una imagen. Usá un único campo \"image\".",
     "upload_error": "Error al subir la imagen",
+    "storage_config_required": "Falta configurar el almacenamiento de archivos: indicá la carpeta de destino, los tipos permitidos y el tamaño máximo.",
     "error_internal": "Error interno del servidor",
     "postId_required": "post_id es requerido",
     "error_create_post_image": "Error al crear la imagen del post",
