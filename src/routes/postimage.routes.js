@@ -12,36 +12,43 @@ const schemaValidatorMiddleware = require("../middlewares/validations/schema.mid
 const numericParamValidateMiddleware = require("../middlewares/validations/numeric.middleware");
 const existValidateMiddleware = require("../middlewares/validations/exist.middleware");
 const { uploadSingleImage } = require("../middlewares/upload.middleware");
-const { createPostImageSchema, updatePostImageSchema } = require("../schemas/postimage.schema");
+const {
+  createPostImageSchema,
+  updatePostImageSchema,
+} = require("../schemas/postimage.schema");
 
 router.get("/", getAllPostImages);
+
 router.post(
   "/",
   uploadSingleImage,
   schemaValidatorMiddleware(createPostImageSchema),
-  existValidateMiddleware(Post, "postId", { aliases: ["post_id"] }),
-  createPostImage
+  existValidateMiddleware(Post, "post_id", { aliases: ["postId"] }),
+  createPostImage,
 );
+
 router.get(
   "/:id",
   numericParamValidateMiddleware("id"),
   existValidateMiddleware(PostImage, "id"),
-  getPostImageById
+  getPostImageById,
 );
+
 router.patch(
   "/:id",
   numericParamValidateMiddleware("id"),
   existValidateMiddleware(PostImage, "id"),
   uploadSingleImage,
   schemaValidatorMiddleware(updatePostImageSchema),
-  existValidateMiddleware(Post, "postId", { optional: true, aliases: ["post_id"] }),
-  updatePostImage
+  existValidateMiddleware(Post, "post_id", { optional: true, aliases: ["postId"] }),
+  updatePostImage,
 );
+
 router.delete(
   "/:id",
   numericParamValidateMiddleware("id"),
   existValidateMiddleware(PostImage, "id"),
-  deletePostImage
+  deletePostImage,
 );
 
 module.exports = router;

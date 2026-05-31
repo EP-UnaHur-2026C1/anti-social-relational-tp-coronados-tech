@@ -1,5 +1,7 @@
 const { Post, User, PostImage, Comment, Tag } = require("../db/models");
 const { removeAllByPostId } = require("./postimage.service");
+const postCache = require("./postCache.service");
+
 const postIncludes = [
   {
     model: User,
@@ -10,6 +12,22 @@ const postIncludes = [
   { model: Tag, as: "tags", attributes: ["id", "name"] },
   { model: Comment, as: "comments", attributes: ["id", "content"] },
 ];
+
+const serializePost = (post) => {
+  const json = post.toJSON();
+
+  if (post.comments?.length) {
+    json.comments = post.comments.map((comment) => ({
+      ...comment.toJSON(),
+      monthsOld: comment.monthsOld,
+    }));
+  }
+
+  return json;
+};
+
+const listCacheKey = (user_id) =>
+  user_id !== undefined ? `posts:user:${user_id}` : "posts:all";
 
 const resolveTags = async (tagNames = []) => {
   const tagInstances = [];
@@ -27,12 +45,31 @@ const resolveTags = async (tagNames = []) => {
   return tagInstances;
 };
 
-const findAll = ({ user_id } = {}) => {
+const findAll = async ({ user_id } = {}) => {
+  const cacheKey = listCacheKey(user_id);
+  const cached = postCache.get(cacheKey);
+  if (cached) return cached;
+
   const where = user_id !== undefined ? { user_id } : {};
-  return Post.findAll({ where, include: postIncludes });
+  const posts = await Post.findAll({ where, include: postIncludes });
+  const serialized = posts.map(serializePost);
+
+  postCache.set(cacheKey, serialized);
+  return serialized;
 };
 
-const findById = (id) => Post.findByPk(id, { include: postIncludes });
+const findById = async (id) => {
+  const cacheKey = `post:${id}`;
+  const cached = postCache.get(cacheKey);
+  if (cached) return cached;
+
+  const post = await Post.findByPk(id, { include: postIncludes });
+  if (!post) return null;
+
+  const serialized = serializePost(post);
+  postCache.set(cacheKey, serialized);
+  return serialized;
+};
 
 const create = async ({ description, user_id, tags }) => {
   const post = await Post.create({ description, user_id });
@@ -41,9 +78,9 @@ const create = async ({ description, user_id, tags }) => {
     await post.setTags(tagInstances);
   }
 
-  return Post.findByPk(post.id, {
-    include: postIncludes,
-  });
+  postCache.invalidateAll();
+
+  return findById(post.id);
 };
 
 const update = async (id, { description, tags }) => {
@@ -60,7 +97,9 @@ const update = async (id, { description, tags }) => {
     await post.setTags(tagInstances);
   }
 
-  return Post.findByPk(id, { include: postIncludes });
+  postCache.invalidatePost(id);
+
+  return findById(id);
 };
 
 const remove = async (id) => {
@@ -69,6 +108,7 @@ const remove = async (id) => {
 
   await removeAllByPostId(id);
   await post.destroy();
+  postCache.invalidatePost(id);
   return true;
 };
 

@@ -4,7 +4,6 @@ const { User, Post, Comment } = require("../db/models");
 const {
   getAllComments,
   getCommentById,
-  getCommentsByPost,
   createComment,
   updateComment,
   deleteComment,
@@ -19,19 +18,19 @@ const numericParamValidateMiddleware = require("../middlewares/validations/numer
 
 router.get("/", getAllComments);
 
-router.get(
-  "/:id",
-  numericParamValidateMiddleware("id"),
-  existValidateMiddleware(Comment, "id"),
-  getCommentById,
-);
-
 router.post(
   "/",
   schemaValidatorMiddleware(commentSchema),
   existValidateMiddleware(User, "user_id"),
   existValidateMiddleware(Post, "post_id"),
   createComment,
+);
+
+router.get(
+  "/:id",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(Comment, "id"),
+  getCommentById,
 );
 
 router.put(

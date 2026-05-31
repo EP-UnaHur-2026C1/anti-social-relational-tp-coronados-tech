@@ -1,4 +1,5 @@
 const { Comment, User, Post } = require("../db/models");
+const postCache = require("./postCache.service");
 
 const commentIncludes = [
     {
@@ -24,6 +25,8 @@ const create = async ({ content, user_id, post_id }) => {
         post_id,
     });
 
+    postCache.invalidatePost(post_id);
+
     return Comment.findByPk(comment.id, {
         include: commentIncludes,
     });
@@ -48,7 +51,9 @@ const remove = async (id) => {
 
     if (!comment) return false;
 
+    const { post_id } = comment;
     await comment.destroy();
+    postCache.invalidatePost(post_id);
 
     return true;
 };

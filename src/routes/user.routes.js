@@ -10,15 +10,13 @@ const {
   getUserFollowing,
   followUser,
   unfollowUser,
-} = require("../controllers/user.controller.js");
+} = require("../controllers/user.controller");
 const { userSchema, updateUserSchema } = require("../schemas/user.schema");
 const { followSchema } = require("../schemas/follower.schema");
-
 const { User } = require("../db/models");
-
-const schemaValidatorMiddleware = require("../middlewares/validations/schema.middleware.js");
-const existValidateMiddleware = require("../middlewares/validations/exist.middleware.js");
-const numericParamValidateMiddleware = require("../middlewares/validations/numeric.middleware.js");
+const schemaValidatorMiddleware = require("../middlewares/validations/schema.middleware");
+const existValidateMiddleware = require("../middlewares/validations/exist.middleware");
+const numericParamValidateMiddleware = require("../middlewares/validations/numeric.middleware");
 
 router.get("/", getAllUsers);
 

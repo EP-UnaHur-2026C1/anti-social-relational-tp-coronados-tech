@@ -9,10 +9,15 @@ const nameField = Joi.string().trim().min(1).max(25).messages({
 
 const tagSchema = Joi.object({
   name: nameField.required(),
-});
+}).unknown(false);
 
 const updateTagSchema = Joi.object({
   name: nameField.optional(),
-}).min(1);
+})
+  .min(1)
+  .unknown(false)
+  .messages({
+    "object.min": "Debe enviar al menos un campo para actualizar (name)",
+  });
 
 module.exports = { tagSchema, updateTagSchema };

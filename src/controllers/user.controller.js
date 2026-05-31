@@ -3,8 +3,7 @@ const { User } = require("../db/models");
 const followerService = require("../services/follower.service");
 
 const createUser = async (req, res) => {
-    const data = req.body;
-    const user = await User.create(data);
+    const user = await User.create(req.body);
     res.status(HTTP.CREATED).json(user);
 };
 
@@ -21,9 +20,8 @@ const getUserById = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { id } = req.params;
-    const data = req.body;
     const user = await User.findByPk(id);
-    await user.update(data);
+    await user.update(req.body);
     res.status(HTTP.OK).json(user);
 };
 
@@ -31,20 +29,18 @@ const deleteUser = async (req, res) => {
     const { id } = req.params;
     const user = await User.findByPk(id);
     await user.destroy();
-    res.status(HTTP.OK).json({ message: "Usuario eliminado exitosamente" });
+    res.status(HTTP.OK).json({ message: res.__("delete_user", { id }) });
 };
 
 const getUserFollowers = async (req, res) => {
     const { id } = req.params;
     const followers = await followerService.getFollowers(id);
-
     res.status(HTTP.OK).json(followers);
 };
 
 const getUserFollowing = async (req, res) => {
     const { id } = req.params;
     const following = await followerService.getFollowing(id);
-
     res.status(HTTP.OK).json(following);
 };
 
@@ -59,6 +55,12 @@ const followUser = async (req, res) => {
         });
     }
 
+    if (!result) {
+        return res.status(HTTP.NOT_FOUND).json({
+            message: res.__("follow_users_not_found"),
+        });
+    }
+
     res.status(HTTP.CREATED).json({
         message: res.__("follow_success"),
         following_id: Number(id),
@@ -69,7 +71,13 @@ const followUser = async (req, res) => {
 const unfollowUser = async (req, res) => {
     const { id } = req.params;
     const { follower_id } = req.body;
-    await followerService.unfollow(id, follower_id);
+    const result = await followerService.unfollow(id, follower_id);
+
+    if (!result) {
+        return res.status(HTTP.NOT_FOUND).json({
+            message: res.__("follow_users_not_found"),
+        });
+    }
 
     res.status(HTTP.OK).json({
         message: res.__("unfollow_success"),

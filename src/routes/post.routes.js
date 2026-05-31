@@ -87,10 +87,10 @@ router.get(
 
 router.patch(
   "/:id",
-  schemaValidatorMiddleware(updatePostSchema),
   numericParamValidateMiddleware("id"),
   existValidateMiddleware(Post, "id"),
-  updatePost
+  schemaValidatorMiddleware(updatePostSchema),
+  updatePost,
 );
 
 router.delete(

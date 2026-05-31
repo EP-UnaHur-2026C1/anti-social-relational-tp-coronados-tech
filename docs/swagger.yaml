@@ -9,6 +9,8 @@ info:
     **Variables de entorno relevantes:**
     - `PORT`: puerto del servidor (por defecto 3001)
     - `MESES`: antigüedad máxima en meses para mostrar comentarios en publicaciones (por defecto 6)
+    - `CACHE_POSTS_ENABLED`: caché en memoria para GET de posts (por defecto true)
+    - `CACHE_POSTS_TTL_SECONDS`: TTL del caché en segundos (por defecto 60)
     - `DB_DIALECT`: sqlite | mysql | mariadb | postgres
   version: 1.0.0
   contact:
@@ -225,6 +227,8 @@ paths:
     get:
       tags: [Posts]
       summary: Listar publicaciones
+      description: |
+        Respuesta cacheada en memoria (TTL configurable). Se invalida al crear, editar o borrar posts o comentarios.
       operationId: getAllPosts
       parameters:
         - name: user_id

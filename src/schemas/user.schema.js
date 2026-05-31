@@ -96,9 +96,13 @@ const updateUserSchema = Joi.object({
   password: password.optional(),
   birthDate: birthDate.optional(),
   gender: gender.optional(),
-}).min(1).messages({
-  "object.min": "Al menos un campo debe ser proporcionado para actualizar el usuario"
-});
+})
+  .min(1)
+  .unknown(false)
+  .messages({
+    "object.min":
+      "Debe enviar al menos un campo para actualizar el usuario",
+  });
 
 const userSchema = Joi.object({
   nickname,

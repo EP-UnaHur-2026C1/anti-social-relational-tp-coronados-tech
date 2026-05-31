@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const { Tag } = require("../db/models");
-
 const {
   createTag,
   getAllTags,
@@ -9,7 +8,6 @@ const {
   updateTag,
   deleteTag,
 } = require("../controllers/tag.controller");
-
 const schemaValidatorMiddleware = require("../middlewares/validations/schema.middleware");
 const existValidateMiddleware = require("../middlewares/validations/exist.middleware");
 const numericParamValidateMiddleware = require("../middlewares/validations/numeric.middleware");

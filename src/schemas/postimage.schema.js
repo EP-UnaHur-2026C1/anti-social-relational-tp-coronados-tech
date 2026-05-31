@@ -13,6 +13,12 @@ const createPostImageSchema = Joi.object({
 
 const updatePostImageSchema = Joi.object({
     postId: postIdField.optional(),
-}).min(1);
+    post_id: postIdField.optional(),
+})
+    .min(1)
+    .unknown(true)
+    .messages({
+        "object.min": "Debe enviar al menos un campo para actualizar (postId o post_id)",
+    });
 
 module.exports = { createPostImageSchema, updatePostImageSchema };

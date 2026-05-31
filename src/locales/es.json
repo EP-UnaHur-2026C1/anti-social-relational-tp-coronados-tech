@@ -14,6 +14,9 @@
     "unfollow_success": "Dejaste de seguir al usuario correctamente",
     "error_delete_post" : "Error al eliminar el post",
     "delete_post":  "El Post con id {{id}} eliminado correctamente",
+    "delete_tag": "El Tag con id {{id}} eliminado correctamente",
+    "delete_comment": "El Comentario con id {{id}} eliminado correctamente",
+    "delete_user": "El Usuario con id {{id}} eliminado correctamente",
     "user_already_exists": "El campo {{field}} ya se encuentra en uso por otro usuario.",
 
     "no_image_sent": "No se envió ninguna imagen",

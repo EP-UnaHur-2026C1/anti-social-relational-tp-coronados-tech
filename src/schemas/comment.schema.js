@@ -25,10 +25,15 @@ const commentSchema = Joi.object({
   content: contentField.required(),
   post_id: postIdField.required(),
   user_id: userIdField.required(),
-});
+}).unknown(false);
 
 const updateCommentSchema = Joi.object({
   content: contentField.optional(),
-}).min(1);
+})
+  .min(1)
+  .unknown(false)
+  .messages({
+    "object.min": "Debe enviar al menos un campo para actualizar (content)",
+  });
 
 module.exports = { commentSchema, updateCommentSchema };
