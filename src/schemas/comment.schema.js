@@ -7,11 +7,6 @@ const contentField = Joi.string().trim().min(1).max(150).messages({
   "string.max": "content debe tener como máximo {#limit} caracteres",
 });
 
-const isVisibleField = Joi.boolean().messages({
-  "any.required": "isVisible es requerido",
-  "boolean.base": "isVisible debe ser un valor booleano",
-});
-
 const postIdField = Joi.number().integer().positive().messages({
   "any.required": "post_id es requerido",
   "number.base": "post_id debe ser un número",

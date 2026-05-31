@@ -1,7 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const { createUser, getAllUsers, getUserById, updateUser, deleteUser} = require ( "../controllers/user.controller.js" )
+const {
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  getUserFollowers,
+  getUserFollowing,
+  followUser,
+  unfollowUser,
+} = require("../controllers/user.controller.js");
 const { userSchema, updateUserSchema } = require("../schemas/user.schema");
+const { followSchema } = require("../schemas/follower.schema");
 
 const { User } = require("../db/models");
 
@@ -11,32 +22,60 @@ const numericParamValidateMiddleware = require("../middlewares/validations/numer
 
 router.get("/", getAllUsers);
 
-router.post(
-    "/", 
-    schemaValidatorMiddleware(userSchema), 
-    createUser
+router.post("/", schemaValidatorMiddleware(userSchema), createUser);
+
+router.get(
+  "/:id/followers",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  getUserFollowers,
 );
 
 router.get(
-    "/:id", 
-    numericParamValidateMiddleware("id"), 
-    existValidateMiddleware(User, "id"), 
-    getUserById
+  "/:id/following",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  getUserFollowing,
 );
 
-router.put(
-    "/:id", 
-    numericParamValidateMiddleware("id"), 
-    existValidateMiddleware(User, "id"), 
-    schemaValidatorMiddleware(updateUserSchema), 
-    updateUser
+router.post(
+  "/:id/follow",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  schemaValidatorMiddleware(followSchema),
+  existValidateMiddleware(User, "follower_id"),
+  followUser,
 );
 
 router.delete(
-    "/:id", 
-    numericParamValidateMiddleware("id"), 
-    existValidateMiddleware(User, "id"), 
-    deleteUser
+  "/:id/follow",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  schemaValidatorMiddleware(followSchema),
+  existValidateMiddleware(User, "follower_id"),
+  unfollowUser,
+);
+
+router.get(
+  "/:id",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  getUserById,
+);
+
+router.put(
+  "/:id",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  schemaValidatorMiddleware(updateUserSchema),
+  updateUser,
+);
+
+router.delete(
+  "/:id",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  deleteUser,
 );
 
 module.exports = router;

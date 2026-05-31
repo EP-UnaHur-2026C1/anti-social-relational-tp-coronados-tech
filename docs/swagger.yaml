@@ -3,7 +3,13 @@ info:
   title: UnaHur Anti-Social Net API
   description: |
     API REST del backend para la red social **UnaHur Anti-Social Net**.
-    Permite gestionar usuarios, publicaciones, comentarios, etiquetas e imágenes asociadas a posts.
+    Permite gestionar usuarios, publicaciones, comentarios, etiquetas, imágenes asociadas a posts
+    y relaciones de seguimiento entre usuarios (followers).
+
+    **Variables de entorno relevantes:**
+    - `PORT`: puerto del servidor (por defecto 3001)
+    - `MESES`: antigüedad máxima en meses para mostrar comentarios en publicaciones (por defecto 6)
+    - `DB_DIALECT`: sqlite | mysql | mariadb | postgres
   version: 1.0.0
   contact:
     name: Anti-Social Team
@@ -23,6 +29,8 @@ tags:
     description: Comentarios sobre publicaciones
   - name: Tags
     description: Etiquetas de publicaciones
+  - name: Followers
+    description: Relaciones de seguimiento entre usuarios
 
 paths:
   /users:
@@ -118,6 +126,101 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /users/{id}/followers:
+    parameters:
+      - $ref: "#/components/parameters/IdParam"
+    get:
+      tags: [Followers]
+      summary: Listar seguidores de un usuario
+      description: Usuarios que siguen al usuario indicado por `id`.
+      operationId: getUserFollowers
+      responses:
+        "200":
+          description: Lista de seguidores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserSummary"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /users/{id}/following:
+    parameters:
+      - $ref: "#/components/parameters/IdParam"
+    get:
+      tags: [Followers]
+      summary: Listar usuarios seguidos
+      description: Usuarios que el usuario `id` está siguiendo.
+      operationId: getUserFollowing
+      responses:
+        "200":
+          description: Lista de usuarios seguidos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserSummary"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /users/{id}/follow:
+    parameters:
+      - $ref: "#/components/parameters/IdParam"
+    post:
+      tags: [Followers]
+      summary: Seguir a un usuario
+      description: |
+        El usuario `follower_id` comienza a seguir al usuario `id`.
+        No se permite seguirse a uno mismo.
+      operationId: followUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FollowRequest"
+      responses:
+        "201":
+          description: Seguimiento creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FollowActionResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+    delete:
+      tags: [Followers]
+      summary: Dejar de seguir a un usuario
+      operationId: unfollowUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FollowRequest"
+      responses:
+        "200":
+          description: Seguimiento eliminado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FollowActionResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /posts:
     get:
       tags: [Posts]
@@ -133,7 +236,9 @@ paths:
             minimum: 1
       responses:
         "200":
-          description: Lista de publicaciones con usuario, imágenes, tags y comentarios
+          description: |
+            Lista de publicaciones con usuario, imágenes, tags y comentarios visibles.
+            Los comentarios con antigüedad mayor o igual a `MESES` no se incluyen (filtro por `monthsOld`).
           content:
             application/json:
               schema:
@@ -190,6 +295,9 @@ paths:
     patch:
       tags: [Posts]
       summary: Actualizar una publicación
+      description: |
+        Permite actualizar la descripción y/o reemplazar por completo la lista de etiquetas (`tags`).
+        Si se envía `tags`, las etiquetas anteriores del post se sustituyen por las nuevas.
       operationId: updatePost
       requestBody:
         required: true
@@ -430,6 +538,7 @@ paths:
     get:
       tags: [Comments]
       summary: Listar todos los comentarios
+      description: Devuelve todos los comentarios (sin filtro por antigüedad).
       operationId: getAllComments
       responses:
         "200":
@@ -798,6 +907,7 @@ components:
     PostUpdate:
       type: object
       minProperties: 1
+      description: Al menos uno de `description` o `tags` es requerido.
       properties:
         description:
           type: string
@@ -805,6 +915,7 @@ components:
           maxLength: 5000
         tags:
           type: array
+          description: Reemplaza todas las etiquetas actuales del post.
           items:
             type: string
             minLength: 1
@@ -901,7 +1012,6 @@ components:
           type: integer
         content:
           type: string
-
     CommentDetail:
       type: object
       properties:
@@ -921,7 +1031,7 @@ components:
           format: date-time
         monthsOld:
           type: integer
-          description: Meses transcurridos desde la creación (campo virtual)
+          description: Meses transcurridos desde la creación (campo virtual). En GET de posts, si es >= MESES el comentario no se devuelve.
         user:
           $ref: "#/components/schemas/UserSummary"
         post:
@@ -963,3 +1073,25 @@ components:
           type: string
           minLength: 1
           maxLength: 25
+
+    FollowRequest:
+      type: object
+      required: [follower_id]
+      properties:
+        follower_id:
+          type: integer
+          minimum: 1
+          description: ID del usuario que realiza o deja el seguimiento
+
+    FollowActionResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Seguimiento creado correctamente
+        following_id:
+          type: integer
+          description: ID del usuario seguido
+        follower_id:
+          type: integer
+          description: ID del usuario que sigue

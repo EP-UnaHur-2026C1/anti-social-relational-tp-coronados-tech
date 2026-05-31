@@ -14,22 +14,20 @@ const PORT = process.env.PORT || 3001;
 const locale = process.env.IDIOMA === "es" ? process.env.IDIOMA : "es";
 
 i18n.configure({
-  locales: ["es"],
-  directory: path.join(__dirname, "locales"),
-  defaultLocale: locale,
-  autoReload: true,
-  updateFiles: false,
+    locales: ["es"],
+    directory: path.join(__dirname, "locales"),
+    defaultLocale: locale,
+    autoReload: true,
+    updateFiles: false,
 });
-//ROUTE 
+//ROUTE
 const commentsRouter = require("./routes/comments.route");
 const usersRouter = require("./routes/user.routes");
 const postsRouter = require("./routes/post.routes");
 const postImagesRouter = require("./routes/postimage.routes");
 const tagsRouter = require("./routes/tag.routes");
 
-const swaggerDocument = YAML.load(
-  path.join(__dirname, "../docs/swagger.yaml"),
-);
+const swaggerDocument = YAML.load(path.join(__dirname, "../docs/swagger.yaml"));
 
 const app = express();
 
@@ -49,11 +47,11 @@ app.use("/post-images", postImagesRouter);
 app.use(errorMiddleware);
 
 app.listen(PORT, async (err) => {
-  if (err) {
-    console.error(err.message);
-    process.exit(1);
-  }
-  await sequelize.authenticate();
-  await sequelize.sync();
-  console.log(`App iniciada en el puerto ${PORT}`);
+    if (err) {
+        console.error(err.message);
+        process.exit(1);
+    }
+    await sequelize.authenticate();
+    await sequelize.sync();
+    console.log(`App iniciada en el puerto ${PORT}`);
 });
