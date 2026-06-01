@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "6b59ebea-e008-440f-a1f8-be900b5b8d63",
-    "name": "Api - Antisocial",
+    "name": "Api-Antisocial",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "55132673",
     "_collection_link": "https://go.postman.co/collection/55132673-6b59ebea-e008-440f-a1f8-be900b5b8d63?source=collection_link"
@@ -756,9 +756,9 @@
                   ]
                 },
                 "url": {
-                  "raw": "{{uri_post}}2/images",
+                  "raw": "{{uri_post}}1/images",
                   "host": [
-                    "{{uri_post}}2"
+                    "{{uri_post}}1"
                   ],
                   "path": [
                     "images"
@@ -895,7 +895,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n   \"description\": \"asdasd3\",\r\n   \"user_id\": 2,\r\n    \"tags\": [\"tag1\", \"tag2\" , \"tag3\"]\r\n}",
+              "raw": "{\r\n   \"description\": \"asdasd3\",\r\n   \"user_id\": 1,\r\n    \"tags\": [\"tag1\", \"tag2\" , \"tag3\"]\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -974,6 +974,20 @@
               "raw": "{{uri_comments}}",
               "host": [
                 "{{uri_comments}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get comment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{uri_comments}}1",
+              "host": [
+                "{{uri_comments}}1"
               ]
             }
           },
@@ -1066,6 +1080,20 @@
       "item": [
         {
           "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{uri_tags}}",
+              "host": [
+                "{{uri_tags}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get tag",
           "request": {
             "method": "GET",
             "header": [],
