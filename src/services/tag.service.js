@@ -11,19 +11,8 @@ const tagIncludes = [
 ];
 
 const findAll = ({ post_id } = {}) => {
-  /*const postsInclude = {
-    model: Post,
-    as: "posts",
-    attributes: ["id", "description"],
-    through: { attributes: [] },
-  };*/
-
-  if (post_id !== undefined) {
-    postsInclude.where = { id: post_id };
-    postsInclude.required = true;
-  }
-
-  return Tag.findAll({ include: [postsInclude] });
+  const where = post_id !== undefined ? { post_id } : {};
+  return Tag.findAll({ where, include: tagIncludes });
 };
 
 const findById = (id) => Tag.findByPk(id, { include: tagIncludes });
