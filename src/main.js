@@ -27,9 +27,7 @@ const tagsRouter = require("./routes/tag.routes");
 
 const app = express();
 
-const enableSwagger =
-    process.env.NODE_ENV !== "production" ||
-    process.env.ENABLE_SWAGGER === "true";
+const enableSwagger = process.env.NODE_ENV !== "production" || process.env.ENABLE_SWAGGER === "true";
 
 app.use(i18n.init);
 app.use(express.json());
@@ -37,9 +35,7 @@ app.use(express.json());
 if (enableSwagger) {
     const swaggerUi = require("swagger-ui-express");
     const YAML = require("yamljs");
-    const swaggerDocument = YAML.load(
-        path.join(__dirname, "../docs/swagger.yaml"),
-    );
+    const swaggerDocument = YAML.load(path.join(__dirname, "../docs/swagger.yaml"));
     app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }
 
@@ -60,6 +56,6 @@ app.listen(PORT, async (err) => {
         process.exit(1);
     }
     await sequelize.authenticate();
-    await sequelize.sync();
+    await sequelize.sync({ force: true });
     console.log(`App iniciada en el puerto ${PORT}`);
 });

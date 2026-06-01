@@ -14,7 +14,10 @@ const commentIncludes = [
     },
 ];
 
-const findAll = () => Comment.findAll({ include: commentIncludes });
+const findAll = ({ post_id } = {}) => {
+    const where = post_id !== undefined ? { post_id } : {};
+    return Comment.findAll({ where, include: commentIncludes });
+};
 
 const findById = (id) => Comment.findByPk(id, { include: commentIncludes });
 

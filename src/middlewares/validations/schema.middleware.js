@@ -5,7 +5,7 @@ const validateRequest = (schema, source, targetKey) => {
         const result = schema.validate(req[source] ?? {}, {
             abortEarly: false,
             stripUnknown: true,
-            convert: source === "query",
+            convert: true,
         });
         if (result.error) {
             return res.status(HTTP.BAD_REQUEST).json({

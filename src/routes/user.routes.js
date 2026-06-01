@@ -17,6 +17,7 @@ const { User } = require("../db/models");
 const schemaValidatorMiddleware = require("../middlewares/validations/schema.middleware");
 const existValidateMiddleware = require("../middlewares/validations/exist.middleware");
 const numericParamValidateMiddleware = require("../middlewares/validations/numeric.middleware");
+const alreadyFollowingMiddleware = require("../middlewares/validations/alreadyFollowing.middleware");
 
 router.get("/", getAllUsers);
 
@@ -42,14 +43,15 @@ router.post(
   existValidateMiddleware(User, "id"),
   schemaValidatorMiddleware(followSchema),
   existValidateMiddleware(User, "follower_id"),
+  alreadyFollowingMiddleware,
   followUser,
 );
 
 router.delete(
-  "/:id/follow",
+  "/:id/follow/:follower_id",
   numericParamValidateMiddleware("id"),
+  numericParamValidateMiddleware("follower_id"),
   existValidateMiddleware(User, "id"),
-  schemaValidatorMiddleware(followSchema),
   existValidateMiddleware(User, "follower_id"),
   unfollowUser,
 );

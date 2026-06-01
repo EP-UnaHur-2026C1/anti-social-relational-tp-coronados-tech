@@ -36,4 +36,12 @@ const updateCommentSchema = Joi.object({
     "object.min": "Debe enviar al menos un campo para actualizar (content)",
   });
 
-module.exports = { commentSchema, updateCommentSchema };
+const getAllCommentsQuerySchema = Joi.object({
+  post_id: postIdField.optional(),
+})
+  .unknown(false)
+  .messages({
+    "object.unknown": "Parámetro de consulta no permitido",
+  });
+
+module.exports = { commentSchema, updateCommentSchema, getAllCommentsQuerySchema };

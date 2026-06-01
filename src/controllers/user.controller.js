@@ -63,8 +63,7 @@ const followUser = async (req, res) => {
 };
 
 const unfollowUser = async (req, res) => {
-    const { id } = req.params;
-    const { follower_id } = req.body;
+    const { id, follower_id } = req.params;
     const result = await followerService.unfollow(id, follower_id);
 
     res.status(HTTP.OK).json({

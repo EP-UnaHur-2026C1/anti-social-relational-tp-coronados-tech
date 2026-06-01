@@ -9,7 +9,8 @@ const createTag = async (req, res) => {
 };
 
 const getAllTags = async (req, res) => {
-    const tags = await tagService.findAll();
+    const { post_id } = req.query;
+    const tags = await tagService.findAll({ post_id });
     res.status(HTTP.OK).json(tags);
 };
 

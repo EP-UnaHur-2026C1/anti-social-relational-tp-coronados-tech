@@ -2,7 +2,8 @@ const HTTP = require("../config/HttpCode");
 const commentService = require("../services/comment.service");
 
 const getAllComments = async (req, res) => {
-    const comments = await commentService.findAll();
+    const { post_id } = req.query;
+    const comments = await commentService.findAll({ post_id });
     res.status(HTTP.OK).json(comments);
 };
 

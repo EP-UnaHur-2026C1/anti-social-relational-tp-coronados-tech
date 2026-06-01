@@ -201,16 +201,20 @@ paths:
           $ref: "#/components/responses/NotFound"
         "409":
           $ref: "#/components/responses/ConflictError"
+
+  /users/{id}/follow/{follower_id}:
+    parameters:
+      - $ref: "#/components/parameters/IdParam"
+      - name: follower_id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID del usuario que deja de seguir
     delete:
       tags: [Followers]
       summary: Dejar de seguir a un usuario
       operationId: unfollowUser
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/FollowRequest"
       responses:
         "200":
           description: Seguimiento eliminado
@@ -542,8 +546,18 @@ paths:
     get:
       tags: [Comments]
       summary: Listar todos los comentarios
-      description: Devuelve todos los comentarios (sin filtro por antigüedad).
+      description: |
+        Devuelve comentarios con usuario y publicación asociados (sin filtro por antigüedad).
+        Opcionalmente filtra por `post_id`.
       operationId: getAllComments
+      parameters:
+        - name: post_id
+          in: query
+          description: Filtrar comentarios por ID de publicación
+          required: false
+          schema:
+            type: integer
+            minimum: 1
       responses:
         "200":
           description: Lista de comentarios con usuario y post
@@ -553,6 +567,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CommentDetail"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/NotFound"
     post:
       tags: [Comments]
       summary: Crear un comentario
@@ -593,7 +611,7 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "404":
           $ref: "#/components/responses/NotFound"
-    put:
+    patch:
       tags: [Comments]
       summary: Actualizar un comentario
       operationId: updateComment
@@ -634,7 +652,18 @@ paths:
     get:
       tags: [Tags]
       summary: Listar todas las etiquetas
+      description: |
+        Devuelve etiquetas con las publicaciones asociadas.
+        Opcionalmente filtra por `post_id` (solo tags vinculados a esa publicación).
       operationId: getAllTags
+      parameters:
+        - name: post_id
+          in: query
+          description: Filtrar etiquetas asociadas a una publicación
+          required: false
+          schema:
+            type: integer
+            minimum: 1
       responses:
         "200":
           description: Lista de tags
@@ -644,6 +673,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Tag"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/NotFound"
     post:
       tags: [Tags]
       summary: Crear una etiqueta
@@ -682,7 +715,7 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "404":
           $ref: "#/components/responses/NotFound"
-    put:
+    patch:
       tags: [Tags]
       summary: Actualizar una etiqueta
       operationId: updateTag
@@ -903,6 +936,7 @@ components:
           minimum: 1
         tags:
           type: array
+          minItems: 1
           items:
             type: string
             minLength: 1
@@ -919,6 +953,7 @@ components:
           maxLength: 5000
         tags:
           type: array
+          minItems: 1
           description: Reemplaza todas las etiquetas actuales del post.
           items:
             type: string
@@ -949,7 +984,7 @@ components:
         tags:
           type: array
           items:
-            $ref: "#/components/schemas/Tag"
+            $ref: "#/components/schemas/TagSummary"
         comments:
           type: array
           items:
@@ -1016,6 +1051,26 @@ components:
           type: integer
         content:
           type: string
+        monthsOld:
+          type: integer
+          description: Meses transcurridos desde la creación (campo virtual)
+
+    PostSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+
+    TagSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
     CommentDetail:
       type: object
       properties:
@@ -1039,12 +1094,7 @@ components:
         user:
           $ref: "#/components/schemas/UserSummary"
         post:
-          type: object
-          properties:
-            id:
-              type: integer
-            description:
-              type: string
+          $ref: "#/components/schemas/PostSummary"
 
     Tag:
       type: object
@@ -1059,6 +1109,11 @@ components:
         updatedAt:
           type: string
           format: date-time
+        posts:
+          type: array
+          description: Publicaciones asociadas a la etiqueta
+          items:
+            $ref: "#/components/schemas/PostSummary"
 
     TagCreate:
       type: object
