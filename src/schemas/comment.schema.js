@@ -7,11 +7,6 @@ const contentField = Joi.string().trim().min(1).max(150).messages({
   "string.max": "content debe tener como máximo {#limit} caracteres",
 });
 
-const isVisibleField = Joi.boolean().messages({
-  "any.required": "isVisible es requerido",
-  "boolean.base": "isVisible debe ser un valor booleano",
-});
-
 const postIdField = Joi.number().integer().positive().messages({
   "any.required": "post_id es requerido",
   "number.base": "post_id debe ser un número",
@@ -30,10 +25,23 @@ const commentSchema = Joi.object({
   content: contentField.required(),
   post_id: postIdField.required(),
   user_id: userIdField.required(),
-});
+}).unknown(false);
 
 const updateCommentSchema = Joi.object({
   content: contentField.optional(),
-}).min(1);
+})
+  .min(1)
+  .unknown(false)
+  .messages({
+    "object.min": "Debe enviar al menos un campo para actualizar (content)",
+  });
 
-module.exports = { commentSchema, updateCommentSchema };
+const getAllCommentsQuerySchema = Joi.object({
+  post_id: postIdField.optional(),
+})
+  .unknown(false)
+  .messages({
+    "object.unknown": "Parámetro de consulta no permitido",
+  });
+
+module.exports = { commentSchema, updateCommentSchema, getAllCommentsQuerySchema };

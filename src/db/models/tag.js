@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Tag.init(
     {
-      name: { type: DataTypes.STRING, allowNull: false },
+      name: { type: DataTypes.STRING, allowNull: false, unique: true },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,

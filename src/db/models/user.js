@@ -20,6 +20,36 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: "following_id"   // Clave de la persona a la que siguen
       });
     }
+
+    toJSON() {
+      const attributes = [
+        "id",
+        "nickname",
+        "name",
+        "lastName",
+        "email",
+        "birthDate",
+        "gender",
+        "createdAt",
+        "updatedAt",
+      ];
+      const values = {};
+
+      for (const attribute of attributes) {
+        const value = this.get(attribute);
+        if (value !== undefined) {
+          values[attribute] = value;
+        }
+      }
+
+      for (const association of ["followers", "following", "posts", "comments"]) {
+        if (this[association] !== undefined) {
+          values[association] = this[association];
+        }
+      }
+
+      return values;
+    }
   }
   User.init(
     {
@@ -28,7 +58,16 @@ module.exports = (sequelize, DataTypes) => {
       lastName: { type: DataTypes.STRING, allowNull: false },
       email: { type: DataTypes.STRING, unique: true, allowNull: false },
       password: { type: DataTypes.STRING, allowNull: false },
-      birthDate: { type: DataTypes.DATE, allowNull: false },
+      birthDate: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+        get() {
+          const value = this.getDataValue("birthDate");
+          if (!value) return null;
+          if (typeof value === "string") return value.slice(0, 10);
+          return value.toISOString().slice(0, 10);
+        },
+      },
       gender: { type: DataTypes.STRING, allowNull: false },
       createdAt: {
         type: DataTypes.DATE,

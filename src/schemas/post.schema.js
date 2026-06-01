@@ -39,7 +39,7 @@ const updatePostSchema = Joi.object({
   .min(1)
   .unknown(false)
   .messages({
-    "object.min": "Debe enviar al menos un campo para actualizar",
+    "object.min": "Debe enviar al menos un campo para actualizar (description y/o tags)",
   });
 
 const getAllPostsQuerySchema = Joi.object({

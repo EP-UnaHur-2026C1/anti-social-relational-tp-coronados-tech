@@ -1,48 +1,86 @@
 const HTTP = require("../config/HttpCode");
-const { User } = require('../db/models');
+const { User } = require("../db/models");
+const followerService = require("../services/follower.service");
 
-// POST/users - crea un nuevo usuario
-const createUser = async (req, res) =>{
-    const data = req.body;
-    const user = await User.create(data);
+const createUser = async (req, res) => {
+    const user = await User.create(req.body);
     res.status(HTTP.CREATED).json(user);
-}
+};
 
-//GET/users - obtiene todos los usuarios
 const getAllUsers = async (req, res) => {
     const users = await User.findAll();
     res.status(HTTP.OK).json(users);
-}
+};
 
-//GET/users/:id - obtiene un usuario por su ID
 const getUserById = async (req, res) => {
     const { id } = req.params;
     const user = await User.findByPk(id);
     res.status(HTTP.OK).json(user);
-}
+};
 
-//PUT/users/:id - actualiza un usuario por su ID
 const updateUser = async (req, res) => {
     const { id } = req.params;
-    const data = req.body;
     const user = await User.findByPk(id);
-    await user.update(data);
+    await user.update(req.body);
     res.status(HTTP.OK).json(user);
-}
+};
 
-//DELETE/users/:id - elimina un usuario por su ID
 const deleteUser = async (req, res) => {
     const { id } = req.params;
     const user = await User.findByPk(id);
     await user.destroy();
-    res.status(HTTP.OK).json({ message: "Usuario eliminado exitosamente" });
-}
+    res.status(HTTP.OK).json({ message: res.__("delete_user", { id }) });
+};
 
+const getUserFollowers = async (req, res) => {
+    const { id } = req.params;
+    const followers = await followerService.getFollowers(id);
+    res.status(HTTP.OK).json(followers);
+};
+
+const getUserFollowing = async (req, res) => {
+    const { id } = req.params;
+    const following = await followerService.getFollowing(id);
+    res.status(HTTP.OK).json(following);
+};
+
+const followUser = async (req, res) => {
+    const { id } = req.params;
+    const { follower_id } = req.body;
+    const result = await followerService.follow(id, follower_id);
+
+    if (result?.selfFollow) {
+        return res.status(HTTP.BAD_REQUEST).json({
+            message: res.__("cannot_follow_self"),
+        });
+    }
+
+    res.status(HTTP.CREATED).json({
+        message: res.__("follow_success"),
+        following_id: Number(id),
+        follower_id: Number(follower_id),
+    });
+};
+
+const unfollowUser = async (req, res) => {
+    const { id, follower_id } = req.params;
+    const result = await followerService.unfollow(id, follower_id);
+
+    res.status(HTTP.OK).json({
+        message: res.__("unfollow_success"),
+        following_id: Number(id),
+        follower_id: Number(follower_id),
+    });
+};
 
 module.exports = {
     createUser,
     getAllUsers,
     getUserById,
     updateUser,
-    deleteUser
+    deleteUser,
+    getUserFollowers,
+    getUserFollowing,
+    followUser,
+    unfollowUser,
 };

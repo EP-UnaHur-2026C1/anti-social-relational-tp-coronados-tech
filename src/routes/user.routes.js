@@ -1,42 +1,81 @@
 const express = require("express");
 const router = express.Router();
-const { createUser, getAllUsers, getUserById, updateUser, deleteUser} = require ( "../controllers/user.controller.js" )
+const {
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  getUserFollowers,
+  getUserFollowing,
+  followUser,
+  unfollowUser,
+} = require("../controllers/user.controller");
 const { userSchema, updateUserSchema } = require("../schemas/user.schema");
-
+const { followSchema } = require("../schemas/follower.schema");
 const { User } = require("../db/models");
-
-const schemaValidatorMiddleware = require("../middlewares/validations/schema.middleware.js");
-const existValidateMiddleware = require("../middlewares/validations/exist.middleware.js");
-const numericParamValidateMiddleware = require("../middlewares/validations/numeric.middleware.js");
+const schemaValidatorMiddleware = require("../middlewares/validations/schema.middleware");
+const existValidateMiddleware = require("../middlewares/validations/exist.middleware");
+const numericParamValidateMiddleware = require("../middlewares/validations/numeric.middleware");
+const alreadyFollowingMiddleware = require("../middlewares/validations/alreadyFollowing.middleware");
 
 router.get("/", getAllUsers);
 
-router.post(
-    "/", 
-    schemaValidatorMiddleware(userSchema), 
-    createUser
+router.post("/", schemaValidatorMiddleware(userSchema), createUser);
+
+router.get(
+  "/:id/followers",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  getUserFollowers,
 );
 
 router.get(
-    "/:id", 
-    numericParamValidateMiddleware("id"), 
-    existValidateMiddleware(User, "id"), 
-    getUserById
+  "/:id/following",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  getUserFollowing,
 );
 
-router.put(
-    "/:id", 
-    numericParamValidateMiddleware("id"), 
-    existValidateMiddleware(User, "id"), 
-    schemaValidatorMiddleware(updateUserSchema), 
-    updateUser
+router.post(
+  "/:id/follow",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  schemaValidatorMiddleware(followSchema),
+  existValidateMiddleware(User, "follower_id"),
+  alreadyFollowingMiddleware,
+  followUser,
 );
 
 router.delete(
-    "/:id", 
-    numericParamValidateMiddleware("id"), 
-    existValidateMiddleware(User, "id"), 
-    deleteUser
+  "/:id/follow/:follower_id",
+  numericParamValidateMiddleware("id"),
+  numericParamValidateMiddleware("follower_id"),
+  existValidateMiddleware(User, "id"),
+  existValidateMiddleware(User, "follower_id"),
+  unfollowUser,
+);
+
+router.get(
+  "/:id",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  getUserById,
+);
+
+router.put(
+  "/:id",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  schemaValidatorMiddleware(updateUserSchema),
+  updateUser,
+);
+
+router.delete(
+  "/:id",
+  numericParamValidateMiddleware("id"),
+  existValidateMiddleware(User, "id"),
+  deleteUser,
 );
 
 module.exports = router;
