@@ -3,7 +3,7 @@
     "_postman_id": "6b59ebea-e008-440f-a1f8-be900b5b8d63",
     "name": "Api-Antisocial",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "55134284",
+    "_exporter_id": "55132673",
     "_collection_link": "https://go.postman.co/collection/55132673-6b59ebea-e008-440f-a1f8-be900b5b8d63?source=collection_link"
   },
   "item": [
@@ -1144,29 +1144,6 @@
               "raw": "{{uri_tags}}",
               "host": [
                 "{{uri_tags}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Assing",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"post_id\": 1\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{uri_tags}}4",
-              "host": [
-                "{{uri_tags}}4"
               ]
             }
           },

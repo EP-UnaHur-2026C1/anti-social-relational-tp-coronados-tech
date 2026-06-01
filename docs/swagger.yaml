@@ -6,12 +6,16 @@ info:
         Permite gestionar usuarios, publicaciones, comentarios, etiquetas, imágenes asociadas a posts
         y relaciones de seguimiento entre usuarios (followers).
 
-        **Variables de entorno relevantes:**
-        - `PORT`: puerto del servidor (por defecto 3001)
-        - `MESES`: antigüedad máxima en meses para mostrar comentarios en publicaciones (por defecto 6)
-        - `CACHE_POSTS_ENABLED`: caché en memoria para GET de posts (por defecto true)
-        - `CACHE_POSTS_TTL_SECONDS`: TTL del caché en segundos (por defecto 60)
-        - `DB_DIALECT`: sqlite | mysql | mariadb | postgres
+        **Variables de entorno relevantes**
+
+        | Variable | Descripción |
+        | --- | --- |
+        | PORT | Puerto del servidor (por defecto 3001) |
+        | MESES | Antigüedad máxima en meses para comentarios en publicaciones (por defecto 6) |
+        | CACHE_POSTS_ENABLED | Caché en memoria para GET de posts (por defecto true) |
+        | CACHE_POSTS_TTL_SECONDS | TTL del caché en segundos (por defecto 60) |
+        | DB_DIALECT | sqlite, mysql, mariadb o postgres |
+        | ENABLE_SWAGGER | Habilita Swagger UI en producción (por defecto false) |
     version: 1.0.0
     contact:
         name: Anti-Social Team
@@ -680,6 +684,10 @@ paths:
         post:
             tags: [Tags]
             summary: Crear una etiqueta
+            description: |
+                Crea una etiqueta por name o reutiliza la existente (mismo nombre, sin distinguir mayúsculas).
+                Si se envía post_id, la vincula a esa publicación.
+                Responde 201 si el tag es nuevo; 200 si ya existía (en ambos casos devuelve el tag con sus posts).
             operationId: createTag
             requestBody:
                 required: true
@@ -688,6 +696,12 @@ paths:
                         schema:
                             $ref: "#/components/schemas/TagCreate"
             responses:
+                "200":
+                    description: Tag ya existía; se devuelve el existente (y se vincula al post si se envió post_id)
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Tag"
                 "201":
                     description: Tag creado
                     content:
@@ -696,6 +710,8 @@ paths:
                                 $ref: "#/components/schemas/Tag"
                 "400":
                     $ref: "#/components/responses/ValidationError"
+                "404":
+                    $ref: "#/components/responses/NotFound"
 
     /tags/{id}:
         parameters:
@@ -842,7 +858,7 @@ components:
                     example: Juan
                 lastName:
                     type: string
-                    example: Pérez
+                    example: Perez
                 email:
                     type: string
                     format: email
@@ -1123,6 +1139,10 @@ components:
                     type: string
                     minLength: 1
                     maxLength: 25
+                post_id:
+                    type: integer
+                    minimum: 1
+                    description: Publicación a la que asociar la etiqueta al crearla (opcional)
 
         TagUpdate:
             type: object
