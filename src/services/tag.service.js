@@ -27,8 +27,16 @@ const findAll = ({ post_id } = {}) => {
 
 const findById = (id) => Tag.findByPk(id, { include: tagIncludes });
 
-const create = async ({ name }) => {
+const create = async ({ name, post_id }) => {
   const tag = await Tag.create({ name });
+
+  if (post_id !== undefined) {
+    const post = await Post.findByPk(post_id);
+    if (post) {
+      await post.addTag(tag);
+    }
+  }
+
   return Tag.findByPk(tag.id, { include: tagIncludes });
 };
 
@@ -41,6 +49,15 @@ const update = async (id, { name }) => {
   await tag.update({ name });
 
   return Tag.findByPk(id, { include: tagIncludes });
+};
+
+const assignToPost = async (tagId, postId) => {
+  const post = await Post.findByPk(postId);
+  const tag = await Tag.findByPk(tagId);
+
+  await post.addTag(tag); // solo agrega, no toca los tags existentes
+
+  return Tag.findByPk(tagId, { include: tagIncludes });
 };
 
 const remove = async (id) => {
@@ -58,5 +75,6 @@ module.exports = {
   findById,
   create,
   update,
+  assignToPost,
   remove,
 };
