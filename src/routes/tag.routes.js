@@ -18,6 +18,7 @@ const {
   tagSchema,
   updateTagSchema,
   getAllTagsQuerySchema,
+  assignTagSchema,
 } = require("../schemas/tag.schema");
 
 router.get(
