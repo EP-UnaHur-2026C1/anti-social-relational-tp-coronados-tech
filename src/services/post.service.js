@@ -75,7 +75,7 @@ const create = async ({ description, user_id, tags }) => {
   const post = await Post.create({ description, user_id });
   if (tags && tags.length > 0) {
     const tagInstances = await resolveTags(tags);
-    await post.addTags(tagInstances);
+    await post.setTags(tagInstances);
   }
 
   postCache.deleteAll();
