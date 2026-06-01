@@ -16,6 +16,7 @@ const nameField = Joi.string().trim().min(1).max(25).messages({
 
 const tagSchema = Joi.object({
   name: nameField.required(),
+  post_id: postIdField.optional(),
 }).unknown(false);
 
 const updateTagSchema = Joi.object({
@@ -35,4 +36,13 @@ const getAllTagsQuerySchema = Joi.object({
     "object.unknown": "Parámetro de consulta no permitido",
   });
 
-module.exports = { tagSchema, updateTagSchema, getAllTagsQuerySchema };
+const assignTagSchema = Joi.object({
+  post_id: postIdField.required(),
+}).unknown(false);
+
+module.exports = {
+  tagSchema,
+  updateTagSchema,
+  getAllTagsQuerySchema,
+  assignTagSchema,
+};
