@@ -29,8 +29,9 @@ const updateTag = async (req, res) => {
 };
 
 const assignTagToPost = async (req, res) => {
-  const { id, postId } = req.params;
-  const result = await tagService.assignToPost(id, postId);
+  const { id } = req.params;
+  const { post_id } = req.body;
+  const result = await tagService.assignToPost(id, post_id);
   res.status(HTTP.OK).json(result);
 };
 

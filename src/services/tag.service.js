@@ -51,13 +51,13 @@ const update = async (id, { name }) => {
   return Tag.findByPk(id, { include: tagIncludes });
 };
 
-const assignToPost = async (tagId, postId) => {
-  const post = await Post.findByPk(postId);
-  const tag = await Tag.findByPk(tagId);
+const assignToPost = async (id, post_id) => {
+  const post = await Post.findByPk(post_id);
+  const tag = await Tag.findByPk(id);
 
-  await post.addTag(tag); // solo agrega, no toca los tags existentes
+  await post.addTag(tag);
 
-  return Tag.findByPk(tagId, { include: tagIncludes });
+  return Tag.findByPk(id, { include: tagIncludes });
 };
 
 const remove = async (id) => {
