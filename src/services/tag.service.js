@@ -38,7 +38,7 @@ const findAll = ({ post_id } = {}) => Tag.findAll({ include: buildInclude(post_i
 const findById = (id) => Tag.findByPk(id, { include: tagIncludes });
 
 const create = async ({ name, post_id }) => {
-    const [tag] = await Tag.findOrCreate({ where: { name: normalizeName(name) } });
+    const [tag, created] = await Tag.findOrCreate({ where: { name: normalizeName(name) } });
 
     if (post_id !== undefined) {
         const post = await Post.findByPk(post_id);
@@ -46,7 +46,8 @@ const create = async ({ name, post_id }) => {
         postCache.deletePost(post_id);
     }
 
-    return Tag.findByPk(tag.id, { include: tagIncludes });
+    const result = await Tag.findByPk(tag.id, { include: tagIncludes });
+    return { tag: result, created };
 };
 
 const update = async (id, { name }) => {

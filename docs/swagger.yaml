@@ -685,8 +685,9 @@ paths:
             tags: [Tags]
             summary: Crear una etiqueta
             description: |
-                Crea una etiqueta por `name`. Si se envía `post_id`, la vincula a esa publicación al crearla
-                (ya no existe un endpoint separado para asignar).
+                Crea una etiqueta por name o reutiliza la existente (mismo nombre, sin distinguir mayúsculas).
+                Si se envía post_id, la vincula a esa publicación.
+                Responde 201 si el tag es nuevo; 200 si ya existía (en ambos casos devuelve el tag con sus posts).
             operationId: createTag
             requestBody:
                 required: true
@@ -695,6 +696,12 @@ paths:
                         schema:
                             $ref: "#/components/schemas/TagCreate"
             responses:
+                "200":
+                    description: Tag ya existía; se devuelve el existente (y se vincula al post si se envió post_id)
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Tag"
                 "201":
                     description: Tag creado
                     content:
